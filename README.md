@@ -132,6 +132,42 @@ Complete running configurations are available in the [configs/](configs/) direct
 - IOS-XE 17.x or later
 - License: Network Advantage + DNA Advantage
 
+## How to Edit This Repository
+
+### Clone the Repository
+```bash
+git clone https://github.com/Enizaksoy/EVPN-VXLAN-on-Catalyst-9K.git
+cd EVPN-VXLAN-on-Catalyst-9K
+```
+
+### Make Changes
+1. Edit files using your preferred editor (VS Code, vim, etc.)
+2. Stage your changes: `git add .`
+3. Commit: `git commit -m "Your commit message"`
+4. Push to GitHub: `git push origin main`
+
+### Edit Directly on GitHub
+1. Navigate to any file on GitHub
+2. Click the pencil icon (Edit this file)
+3. Make your changes
+4. Click "Commit changes"
+
+## About This Project
+
+This documentation was created with the assistance of [Claude Code](https://claude.ai/claude-code) (Anthropic's AI coding assistant).
+
+### What Claude Code Did:
+- Connected to live Cisco Catalyst 9000 switches via SSH
+- Gathered running configurations from all devices
+- Analyzed the EVPN VXLAN fabric topology
+- Generated step-by-step configuration guides
+- Collected live verification output (show commands)
+- Created the topology diagram
+- Organized everything into this GitHub repository
+
+### Author
+- GitHub: [@Enizaksoy](https://github.com/Enizaksoy)
+
 ## References
 
 - [Cisco EVPN VXLAN Configuration Guide](https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9000/software/release/17-x/configuration_guide/vxlan/b_17x_vxlan_9k_cg.html)
