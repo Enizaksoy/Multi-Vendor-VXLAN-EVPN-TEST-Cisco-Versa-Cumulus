@@ -4,6 +4,10 @@ This repository documents the configuration steps for deploying a BGP EVPN VXLAN
 
 ## Topology Overview
 
+![Network Topology](diagrams/topology.svg)
+
+### ASCII Diagram
+
 ```
                     +------------------------+
                     |   External_Router_1    |
