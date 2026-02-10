@@ -3,621 +3,233 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Multi-Vendor EVPN VXLAN Integration - Cisco / Versa / Cumulus</title>
+<title>OnPrem Multi-Vendor EVPN VXLAN - Cisco / Versa / Cumulus</title>
 <style>
-@page {
-    margin: 0.8in;
-    size: A4;
-}
-* {
-    box-sizing: border-box;
-}
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    padding: 40px 60px;
-    line-height: 1.7;
-    color: #2c3e50;
-    background: #fff;
-    font-size: 11pt;
-}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#172b4d;background:#fff;line-height:1.6;font-size:14px}
 
-/* Header Section */
-.header {
-    background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1976d2 100%);
-    color: white;
-    padding: 40px;
-    margin: -40px -60px 40px -60px;
-    text-align: center;
-}
-.header h1 {
-    margin: 0 0 10px 0;
-    font-size: 26pt;
-    font-weight: 600;
-    letter-spacing: -0.5px;
-}
-.header .subtitle {
-    font-size: 14pt;
-    opacity: 0.9;
-    margin-bottom: 20px;
-}
-.header .meta {
-    font-size: 10pt;
-    opacity: 0.8;
-}
-.header .classification {
-    display: inline-block;
-    background: rgba(255,255,255,0.2);
-    padding: 4px 16px;
-    border-radius: 4px;
-    font-size: 9pt;
-    font-weight: 600;
-    letter-spacing: 1px;
-    margin-top: 12px;
-    border: 1px solid rgba(255,255,255,0.4);
-}
+/* ---- wiki layout ---- */
+.wiki-wrap{display:flex;min-height:100vh}
+.sidebar{width:260px;background:#f4f5f7;border-right:1px solid #dfe1e6;padding:20px 0;position:fixed;top:0;left:0;bottom:0;overflow-y:auto}
+.sidebar .logo{padding:16px 20px;font-size:15px;font-weight:700;color:#0052cc;border-bottom:1px solid #dfe1e6;margin-bottom:8px}
+.sidebar ul{list-style:none;padding:0}
+.sidebar li{margin:0}
+.sidebar li a{display:block;padding:7px 20px;color:#42526e;text-decoration:none;font-size:13px;border-left:3px solid transparent;transition:all .15s}
+.sidebar li a:hover{background:#ebecf0;color:#0052cc}
+.sidebar li a.active{background:#deebff;color:#0052cc;border-left-color:#0052cc;font-weight:600}
+.sidebar li.section{padding:16px 20px 4px;font-size:11px;font-weight:700;text-transform:uppercase;color:#6b778c;letter-spacing:.5px}
 
-/* Section Headers */
-h2 {
-    color: #0d47a1;
-    font-size: 16pt;
-    font-weight: 600;
-    border-left: 4px solid #1976d2;
-    padding-left: 15px;
-    margin: 35px 0 20px 0;
-    page-break-after: avoid;
-}
-h3 {
-    color: #1565c0;
-    font-size: 12pt;
-    font-weight: 600;
-    margin: 25px 0 15px 0;
-    page-break-after: avoid;
-}
-h4 {
-    color: #37474f;
-    font-size: 11pt;
-    font-weight: 600;
-    margin: 20px 0 10px 0;
-}
+.main{margin-left:260px;max-width:980px;padding:32px 48px 80px}
 
-/* Tables */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    font-size: 10pt;
-    page-break-inside: avoid;
-}
-th {
-    background: #1565c0;
-    color: white;
-    padding: 12px 15px;
-    text-align: left;
-    font-weight: 600;
-    border: none;
-}
-td {
-    padding: 10px 15px;
-    border-bottom: 1px solid #e0e0e0;
-}
-tr:nth-child(even) {
-    background: #f8f9fa;
-}
-tr:hover {
-    background: #e3f2fd;
-}
+/* ---- breadcrumb ---- */
+.breadcrumb{font-size:12px;color:#6b778c;margin-bottom:8px}
+.breadcrumb a{color:#0052cc;text-decoration:none}
+.breadcrumb a:hover{text-decoration:underline}
 
-/* Code blocks */
-pre {
-    background: #263238;
-    color: #eceff1;
-    padding: 20px;
-    border-radius: 6px;
-    overflow-x: auto;
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    font-size: 9pt;
-    line-height: 1.5;
-    margin: 15px 0;
-    page-break-inside: avoid;
-    border-left: 4px solid #1976d2;
-}
-pre.cisco {
-    border-left-color: #00897b;
-}
-pre.cumulus {
-    border-left-color: #7cb342;
-}
-pre.versa {
-    border-left-color: #f57c00;
-}
-pre.pcap {
-    border-left-color: #e53935;
-    background: #1a1a2e;
-}
-code {
-    background: #eceff1;
-    color: #c62828;
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    font-size: 9pt;
-}
+/* ---- headings ---- */
+h1.page-title{font-size:28px;font-weight:600;color:#172b4d;margin:0 0 6px;line-height:1.2}
+.page-meta{font-size:12px;color:#6b778c;margin-bottom:28px;padding-bottom:16px;border-bottom:1px solid #dfe1e6}
 
-/* Network Diagram */
-.diagram-container {
-    background: #fafafa;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 25px;
-    margin: 20px 0;
-    text-align: center;
-}
-.diagram {
-    font-family: 'Consolas', 'Monaco', monospace;
-    font-size: 8.5pt;
-    white-space: pre;
-    display: inline-block;
-    text-align: left;
-    line-height: 1.3;
-    color: #37474f;
-}
+h2{font-size:20px;font-weight:600;color:#172b4d;margin:40px 0 16px;padding-bottom:8px;border-bottom:2px solid #0052cc}
+h3{font-size:16px;font-weight:600;color:#172b4d;margin:28px 0 12px}
+h4{font-size:14px;font-weight:600;color:#172b4d;margin:20px 0 8px}
 
-/* Alert boxes */
-.info-box {
-    background: #e3f2fd;
-    border-left: 4px solid #1976d2;
-    padding: 15px 20px;
-    margin: 20px 0;
-    border-radius: 0 6px 6px 0;
-}
-.info-box strong {
-    color: #0d47a1;
-}
-.success-box {
-    background: #e8f5e9;
-    border-left: 4px solid #43a047;
-    padding: 15px 20px;
-    margin: 20px 0;
-    border-radius: 0 6px 6px 0;
-}
-.success-box strong {
-    color: #2e7d32;
-}
-.warning-box {
-    background: #fff8e1;
-    border-left: 4px solid #ffa000;
-    padding: 15px 20px;
-    margin: 20px 0;
-    border-radius: 0 6px 6px 0;
-}
-.warning-box strong {
-    color: #e65100;
-}
-.danger-box {
-    background: #ffebee;
-    border-left: 4px solid #e53935;
-    padding: 15px 20px;
-    margin: 20px 0;
-    border-radius: 0 6px 6px 0;
-}
-.danger-box strong {
-    color: #b71c1c;
-}
+/* ---- paragraph and links ---- */
+p{margin:0 0 14px;color:#172b4d}
+a{color:#0052cc;text-decoration:none}
+a:hover{text-decoration:underline}
 
-/* Lists */
-ul {
-    margin: 10px 0;
-    padding-left: 25px;
-}
-li {
-    margin: 5px 0;
-}
+/* ---- tables ---- */
+table{width:100%;border-collapse:collapse;margin:16px 0 24px;font-size:13px}
+th{background:#f4f5f7;color:#172b4d;font-weight:600;text-align:left;padding:10px 12px;border:1px solid #dfe1e6}
+td{padding:8px 12px;border:1px solid #dfe1e6;vertical-align:top}
+tr:hover td{background:#fafbfc}
 
-/* Page breaks */
-.page-break {
-    page-break-before: always;
-    margin-top: 40px;
-}
+/* ---- code blocks ---- */
+pre{background:#f4f5f7;border:1px solid #dfe1e6;border-radius:3px;padding:16px;overflow-x:auto;font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-size:12px;line-height:1.5;margin:12px 0 20px;color:#172b4d}
+pre.dark{background:#1e1e1e;color:#d4d4d4;border-color:#333}
+code{background:#f4f5f7;padding:1px 5px;border-radius:3px;font-family:'SFMono-Regular',Consolas,monospace;font-size:12px;color:#e53e3e}
 
-/* Footer */
-.footer {
-    margin-top: 50px;
-    padding-top: 20px;
-    border-top: 2px solid #e0e0e0;
-    text-align: center;
-    color: #78909c;
-    font-size: 9pt;
-}
+/* ---- info panels (confluence style) ---- */
+.panel{border-radius:3px;padding:16px 20px;margin:16px 0 20px;position:relative}
+.panel::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:3px 0 0 3px}
+.panel-info{background:#deebff;color:#0747a6}.panel-info::before{background:#0052cc}
+.panel-success{background:#e3fcef;color:#006644}.panel-success::before{background:#00875a}
+.panel-warning{background:#fffae6;color:#172b4d}.panel-warning::before{background:#ff991f}
+.panel-error{background:#ffebe6;color:#bf2600}.panel-error::before{background:#de350b}
+.panel strong{display:block;margin-bottom:4px}
 
-/* Two column layout */
-.two-col {
-    display: flex;
-    gap: 30px;
-    margin: 20px 0;
-}
-.two-col > div {
-    flex: 1;
-}
+/* ---- badges ---- */
+.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.badge-cisco{background:#0052cc;color:#fff}
+.badge-versa{background:#ff5630;color:#fff}
+.badge-cumulus{background:#00875a;color:#fff}
+.badge-ok{background:#00875a;color:#fff}
+.badge-fixed{background:#ff991f;color:#172b4d}
 
-/* Badge style */
-.badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 12px;
-    font-size: 9pt;
-    font-weight: 600;
-}
-.badge-success {
-    background: #c8e6c9;
-    color: #2e7d32;
-}
-.badge-info {
-    background: #bbdefb;
-    color: #1565c0;
-}
-.badge-warning {
-    background: #fff3e0;
-    color: #e65100;
-}
-.badge-danger {
-    background: #ffcdd2;
-    color: #b71c1c;
-}
+/* ---- topology image ---- */
+.topology-wrap{margin:20px 0;text-align:center;background:#fafbfc;border:1px solid #dfe1e6;border-radius:3px;padding:16px}
+.topology-wrap img,.topology-wrap svg{max-width:100%;height:auto}
 
-/* TOC */
-.toc {
-    background: #f5f5f5;
-    padding: 25px;
-    border-radius: 8px;
-    margin: 30px 0;
-    column-count: 2;
-    column-gap: 40px;
-}
-.toc h3 {
-    margin-top: 0;
-    color: #0d47a1;
-    column-span: all;
-}
-.toc ul {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-}
-.toc li {
-    padding: 4px 0;
-    border-bottom: 1px dotted #ccc;
-    break-inside: avoid;
-}
-.toc a {
-    color: #1565c0;
-    text-decoration: none;
-}
-.toc a:hover {
-    text-decoration: underline;
-}
+/* ---- columns ---- */
+.cols{display:flex;gap:24px;margin:16px 0}
+.cols>div{flex:1}
 
-/* Hex dump styling */
-.hex-highlight-red {
-    color: #ff5252;
-    font-weight: bold;
-}
-.hex-highlight-green {
-    color: #69f0ae;
-    font-weight: bold;
-}
-.hex-highlight-blue {
-    color: #82b1ff;
-    font-weight: bold;
-}
+/* ---- hex dump ---- */
+.hex{font-family:'SFMono-Regular',Consolas,monospace;font-size:12px}
+.hex .hl-red{color:#de350b;font-weight:700}
+.hex .hl-green{color:#00875a;font-weight:700}
 
-/* Vendor tags */
-.vendor-tag {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 3px;
-    font-size: 8pt;
-    font-weight: 600;
-    margin-right: 4px;
-}
-.vendor-cisco { background: #00897b; color: white; }
-.vendor-versa { background: #f57c00; color: white; }
-.vendor-cumulus { background: #7cb342; color: white; }
+/* ---- bit diagram ---- */
+.bit-diagram{background:#f4f5f7;border:1px solid #dfe1e6;border-radius:3px;padding:16px;margin:12px 0;overflow-x:auto;font-family:'SFMono-Regular',Consolas,monospace;font-size:12px;line-height:1.4}
 
-/* VXLAN header diagram */
-.bit-diagram {
-    font-family: 'Consolas', monospace;
-    font-size: 9pt;
-    background: #fafafa;
-    border: 1px solid #e0e0e0;
-    padding: 15px;
-    border-radius: 6px;
-    margin: 15px 0;
-    overflow-x: auto;
-}
+/* ---- expand/collapse ---- */
+details{margin:12px 0}
+details>summary{cursor:pointer;padding:8px 12px;background:#f4f5f7;border:1px solid #dfe1e6;border-radius:3px;font-weight:600;font-size:13px;color:#0052cc;user-select:none}
+details>summary:hover{background:#ebecf0}
+details[open]>summary{border-radius:3px 3px 0 0;border-bottom:none}
+details>.detail-body{border:1px solid #dfe1e6;border-top:none;border-radius:0 0 3px 3px;padding:16px}
+
+/* ---- responsive ---- */
+@media(max-width:900px){.sidebar{display:none}.main{margin-left:0;padding:20px 24px}}
+@media print{.sidebar{display:none}.main{margin-left:0;padding:20px}h2{page-break-after:avoid}pre{page-break-inside:avoid}}
 </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>Multi-Vendor EVPN VXLAN Fabric</h1>
-    <div class="subtitle">Cisco Catalyst 9K / Versa FlexVNF / Cumulus Linux (NVIDIA) Integration</div>
-    <div class="meta">
-        <strong>Version:</strong> 2.0 &nbsp;|&nbsp;
-        <strong>Date:</strong> February 10, 2026 &nbsp;|&nbsp;
-        <strong>Author:</strong> Network Engineering Team
-    </div>
-    <div class="classification">INTERNAL - ENGINEERING REFERENCE</div>
+<!-- ============== SIDEBAR ============== -->
+<div class="wiki-wrap">
+<nav class="sidebar">
+  <div class="logo">EVPN VXLAN Fabric</div>
+  <ul>
+    <li class="section">Overview</li>
+    <li><a href="#s1" class="active">Summary</a></li>
+    <li><a href="#s2">Topology</a></li>
+    <li><a href="#s3">Device Inventory</a></li>
+    <li><a href="#s4">VLAN / VNI Mapping</a></li>
+    <li class="section">Configuration</li>
+    <li><a href="#s5">Underlay (OSPF)</a></li>
+    <li><a href="#s6">BGP EVPN Overlay</a></li>
+    <li><a href="#s7">L2VPN EVPN Instances</a></li>
+    <li><a href="#s8">Cumulus Linux (NVUE)</a></li>
+    <li class="section">Verification</li>
+    <li><a href="#s9">NVE Peers</a></li>
+    <li><a href="#s10">MAC Learning</a></li>
+    <li class="section">Troubleshooting</li>
+    <li><a href="#s11">VXLAN-GBP Issue</a></li>
+    <li><a href="#s12">GBP Fix &amp; Resolution</a></li>
+    <li><a href="#s13">Command Reference</a></li>
+    <li><a href="#s14">Lessons Learned</a></li>
+  </ul>
+</nav>
+
+<!-- ============== MAIN CONTENT ============== -->
+<div class="main">
+
+<div class="breadcrumb"><a href="#">Home</a> / <a href="#">Network Engineering</a> / <a href="#">EVPN VXLAN</a> / OnPrem Multi-Vendor</div>
+
+<h1 class="page-title">OnPrem Multi-Vendor EVPN VXLAN Integration</h1>
+<div class="page-meta">
+  Cisco Catalyst 9300 &bull; Versa FlexVNF &bull; Cumulus Linux (NVIDIA) &nbsp;|&nbsp; Version 2.0 &nbsp;|&nbsp; Last updated: February 10, 2026 &nbsp;|&nbsp; INTERNAL
 </div>
 
-<div class="toc">
-    <h3>Table of Contents</h3>
-    <ul>
-        <li><a href="#s1">1. Executive Summary</a></li>
-        <li><a href="#s2">2. Network Topology</a></li>
-        <li><a href="#s3">3. Device Inventory</a></li>
-        <li><a href="#s4">4. VLAN and VNI Mapping</a></li>
-        <li><a href="#s5">5. Underlay Configuration (OSPF)</a></li>
-        <li><a href="#s6">6. BGP EVPN Overlay Configuration</a></li>
-        <li><a href="#s7">7. L2VPN EVPN Instance Configuration</a></li>
-        <li><a href="#s8">8. Cumulus Linux (NVIDIA) Configuration</a></li>
-        <li><a href="#s9">9. NVE Peer Verification</a></li>
-        <li><a href="#s10">10. MAC Address Learning</a></li>
-        <li><a href="#s11">11. VXLAN-GBP Interoperability Issue</a></li>
-        <li><a href="#s12">12. VXLAN-GBP Fix &amp; Resolution</a></li>
-        <li><a href="#s13">13. Troubleshooting Commands</a></li>
-        <li><a href="#s14">14. Summary &amp; Lessons Learned</a></li>
-    </ul>
+<!-- ==================== 1 ==================== -->
+<h2 id="s1">1. Summary</h2>
+
+<p>This document covers the integration of a multi-vendor BGP EVPN VXLAN fabric for Layer 2 extension of <strong>VLAN 1151 (VNI 401151)</strong> across four leaf VTEPs. The fabric uses iBGP with a route reflector, OSPF underlay, and ingress replication for BUM traffic.</p>
+
+<div class="cols">
+<div>
+<h4>Fabric Components</h4>
+<table>
+  <tr><td><span class="badge badge-cisco">CISCO</span> sw1</td><td>Spine / BGP Route Reflector</td></tr>
+  <tr><td><span class="badge badge-cisco">CISCO</span> sw2</td><td>Leaf VTEP</td></tr>
+  <tr><td><span class="badge badge-cisco">CISCO</span> sw3</td><td>Leaf VTEP</td></tr>
+  <tr><td><span class="badge badge-versa">VERSA</span> FlexVNF</td><td>SD-WAN VTEP</td></tr>
+  <tr><td><span class="badge badge-cumulus">CUMULUS</span> Nvidia</td><td>Leaf VTEP</td></tr>
+</table>
 </div>
-
-<!-- ===================== SECTION 1 ===================== -->
-<h2 id="s1">1. Executive Summary</h2>
-
-<p>This document describes the integration of a multi-vendor BGP EVPN VXLAN fabric consisting of <strong>Cisco Catalyst 9000</strong>, <strong>Versa FlexVNF SD-WAN</strong>, and <strong>Cumulus Linux (NVIDIA)</strong> switches. The fabric provides Layer 2 extension of VLAN 1151 (VNI 401151) across all four leaf VTEPs using standard EVPN Type-2 (MAC/IP) and Type-3 (IMET) routes with ingress replication.</p>
-
-<p>This document also covers a critical <strong>VXLAN-GBP (Group Based Policy) interoperability issue</strong> discovered during Cumulus-to-Versa traffic testing, including packet capture evidence, root cause analysis, and the resolution applied.</p>
-
-<div class="two-col">
-    <div>
-        <h4>Key Components</h4>
-        <ul>
-            <li><span class="vendor-tag vendor-cisco">Cisco</span> 3x Catalyst 9300 (sw1 Spine/RR, sw2/sw3 Leaf)</li>
-            <li><span class="vendor-tag vendor-versa">Versa</span> 1x FlexVNF 22.1.4 (SD-WAN Leaf)</li>
-            <li><span class="vendor-tag vendor-cumulus">Cumulus</span> 1x Cumulus Linux 5.x / NVIDIA (Leaf)</li>
-            <li>BGP AS: 6500 (iBGP with RR)</li>
-            <li>OSPF Area: 100 (Underlay)</li>
-        </ul>
-    </div>
-    <div>
-        <h4>Integration Status</h4>
-        <ul>
-            <li><span class="badge badge-success">OSPF Adjacency</span> All neighbors FULL</li>
-            <li><span class="badge badge-success">BGP EVPN</span> All peers established</li>
-            <li><span class="badge badge-success">VXLAN Tunnels</span> 4 VTEPs active</li>
-            <li><span class="badge badge-success">MAC Learning</span> Cross-vendor working</li>
-            <li><span class="badge badge-warning">VXLAN-GBP</span> Versa sends GBP headers (resolved)</li>
-        </ul>
-    </div>
-</div>
-
-<!-- ===================== SECTION 2 ===================== -->
-<h2 id="s2">2. Network Topology</h2>
-
-<div class="diagram-container">
-<div class="diagram">
-                              +---------------------------+
-                              |    sw1 - Spine / BGP RR   |
-                              |    Catalyst 9300          |
-                              |    Loopback: 1.1.1.1      |
-                              |    Mgmt: 192.168.20.77    |
-                              +--+------+------+------+---+
-                                 |      |      |      |
-                              Gi1/0/1 Gi1/0/2 Gi1/0/3 Gi1/0/4
-                            12.12.12.1 .5    .9     .13
-                                 |      |      |      |
-                            12.12.12.2 .6    .10    .14
-                                 |      |      |      |
-                 +---------------+      |      |      +------------------+
-                 |                      |      |                         |
-       +---------+----------+  +--------+--------+  +---------+----------+  +----------+---------+
-       |  sw2 - Leaf VTEP   |  |  sw3 - Leaf VTEP|  |  VERSA FlexVNF    |  | Cumulus_Nvidia      |
-       |  Catalyst 9300     |  |  Catalyst 9300   |  |  SD-WAN VTEP      |  | Cumulus Linux 5.x   |
-       |  Lo: 1.1.1.2       |  |  Lo: 1.1.1.3    |  |  VTEP: 1.1.1.4    |  | Lo: 1.1.1.5         |
-       |  Mgmt: 192.168.20.76  |  Mgmt: 192.168.20.81  |  Mgmt: 192.168.20.166  |  Mgmt: 192.168.20.172 |
-       +---------+----------+  +--------+--------+  +---------+----------+  +----------+---------+
-                 |                      |                      |                         |
-            Gi1/0/4               Gi1/0/4               Vni-0/1                      Swp2
-           VLAN 1151             VLAN 1151             VLAN 1151                    VLAN 1151
-                 |                      |                      |                         |
-          +------+------+       +------+------+        +------+------+           +------+------+
-          |Test_Client_SW|       |Test_Client_SW_2|      |Test_Client_SW_3|         | iol-0        |
-          |192.168.1.22  |       |192.168.1.22    |      |192.168.1.10    |         |192.168.1.12  |
-          +--------------+       +--------------+        +--------------+           +--------------+
+<div>
+<h4>Status</h4>
+<table>
+  <tr><td>OSPF Adjacencies</td><td><span class="badge badge-ok">FULL</span></td></tr>
+  <tr><td>BGP EVPN Peers</td><td><span class="badge badge-ok">Established</span></td></tr>
+  <tr><td>VXLAN Tunnels</td><td><span class="badge badge-ok">4 VTEPs UP</span></td></tr>
+  <tr><td>Cross-vendor MAC Learning</td><td><span class="badge badge-ok">Working</span></td></tr>
+  <tr><td>VXLAN-GBP (Versa)</td><td><span class="badge badge-fixed">FIXED</span></td></tr>
+</table>
 </div>
 </div>
 
-<!-- ===================== SECTION 3 ===================== -->
+<!-- ==================== 2 ==================== -->
+<h2 id="s2">2. Topology</h2>
+
+<div class="topology-wrap">
+  <img src="data:image/svg+xml;base64," alt="" style="display:none"/>
+  <object data="../diagrams/topology.svg" type="image/svg+xml" style="width:100%;max-width:1100px;"></object>
+</div>
+
+<p><em>Diagram: All four leaf VTEPs connected to sw1 spine via OSPF point-to-point links. VXLAN full-mesh tunnels overlay shown in purple dashed lines. Versa sends VXLAN-GBP headers (orange). Cumulus has GBP fix applied (green).</em></p>
+
+<!-- ==================== 3 ==================== -->
 <h2 id="s3">3. Device Inventory</h2>
 
 <table>
-    <tr>
-        <th>Device</th>
-        <th>Role</th>
-        <th>Platform</th>
-        <th>Loopback/VTEP</th>
-        <th>OSPF RID</th>
-        <th>BGP AS</th>
-        <th>Mgmt IP</th>
-    </tr>
-    <tr>
-        <td><strong>sw1</strong></td>
-        <td>Spine / BGP RR</td>
-        <td>Catalyst 9300</td>
-        <td>1.1.1.1</td>
-        <td>1.1.1.1</td>
-        <td>6500</td>
-        <td>192.168.20.77</td>
-    </tr>
-    <tr>
-        <td><strong>sw2</strong></td>
-        <td>Leaf VTEP</td>
-        <td>Catalyst 9300</td>
-        <td>1.1.1.2</td>
-        <td>1.1.1.2</td>
-        <td>6500</td>
-        <td>192.168.20.76</td>
-    </tr>
-    <tr>
-        <td><strong>sw3</strong></td>
-        <td>Leaf VTEP</td>
-        <td>Catalyst 9300</td>
-        <td>1.1.1.3</td>
-        <td>1.1.1.3</td>
-        <td>6500</td>
-        <td>192.168.20.81</td>
-    </tr>
-    <tr>
-        <td><strong>Versa</strong></td>
-        <td>SD-WAN VTEP</td>
-        <td>FlexVNF 22.1.4</td>
-        <td>1.1.1.4</td>
-        <td>12.12.12.10</td>
-        <td>6500</td>
-        <td>192.168.20.166</td>
-    </tr>
-    <tr>
-        <td><strong>Cumulus_Nvidia</strong></td>
-        <td>Leaf VTEP</td>
-        <td>Cumulus Linux 5.x</td>
-        <td>1.1.1.5</td>
-        <td>1.1.1.5</td>
-        <td>6500</td>
-        <td>192.168.20.172</td>
-    </tr>
+  <tr><th>Device</th><th>Role</th><th>Platform</th><th>Loopback / VTEP</th><th>OSPF RID</th><th>BGP AS</th><th>Mgmt IP</th></tr>
+  <tr><td><span class="badge badge-cisco">CISCO</span> <strong>sw1</strong></td><td>Spine / BGP RR</td><td>Catalyst 9300</td><td>1.1.1.1</td><td>1.1.1.1</td><td>6500</td><td>192.168.20.77</td></tr>
+  <tr><td><span class="badge badge-cisco">CISCO</span> <strong>sw2</strong></td><td>Leaf VTEP</td><td>Catalyst 9300</td><td>1.1.1.2</td><td>1.1.1.2</td><td>6500</td><td>192.168.20.76</td></tr>
+  <tr><td><span class="badge badge-cisco">CISCO</span> <strong>sw3</strong></td><td>Leaf VTEP</td><td>Catalyst 9300</td><td>1.1.1.3</td><td>1.1.1.3</td><td>6500</td><td>192.168.20.81</td></tr>
+  <tr><td><span class="badge badge-versa">VERSA</span> <strong>FlexVNF</strong></td><td>SD-WAN VTEP</td><td>FlexVNF 22.1.4</td><td>1.1.1.4</td><td>12.12.12.10</td><td>6500</td><td>192.168.20.166</td></tr>
+  <tr><td><span class="badge badge-cumulus">CUMULUS</span> <strong>Nvidia</strong></td><td>Leaf VTEP</td><td>Cumulus Linux 5.x</td><td>1.1.1.5</td><td>1.1.1.5</td><td>6500</td><td>192.168.20.172</td></tr>
 </table>
 
-<h3>3.1 Underlay Point-to-Point Links</h3>
+<h3>Underlay Point-to-Point Links</h3>
+<table>
+  <tr><th>Link</th><th>sw1 Intf</th><th>sw1 IP</th><th>Remote Intf</th><th>Remote IP</th><th>Subnet</th></tr>
+  <tr><td>sw1 &harr; sw2</td><td>Gi1/0/1</td><td>12.12.12.1</td><td>Gi1/0/1</td><td>12.12.12.2</td><td>12.12.12.0/30</td></tr>
+  <tr><td>sw1 &harr; sw3</td><td>Gi1/0/2</td><td>12.12.12.5</td><td>Gi1/0/1</td><td>12.12.12.6</td><td>12.12.12.4/30</td></tr>
+  <tr><td>sw1 &harr; Versa</td><td>Gi1/0/3</td><td>12.12.12.9</td><td>Vni-0/2</td><td>12.12.12.10</td><td>12.12.12.8/30</td></tr>
+  <tr><td>sw1 &harr; Cumulus</td><td>Gi1/0/4</td><td>12.12.12.13</td><td>swp1</td><td>12.12.12.14</td><td>12.12.12.12/30</td></tr>
+</table>
+
+<!-- ==================== 4 ==================== -->
+<h2 id="s4">4. VLAN / VNI Mapping</h2>
 
 <table>
-    <tr>
-        <th>Link</th>
-        <th>sw1 Interface</th>
-        <th>sw1 IP</th>
-        <th>Remote Interface</th>
-        <th>Remote IP</th>
-        <th>Subnet</th>
-    </tr>
-    <tr>
-        <td>sw1 &harr; sw2</td>
-        <td>Gi1/0/1</td>
-        <td>12.12.12.1</td>
-        <td>Gi1/0/1</td>
-        <td>12.12.12.2</td>
-        <td>12.12.12.0/30</td>
-    </tr>
-    <tr>
-        <td>sw1 &harr; sw3</td>
-        <td>Gi1/0/2</td>
-        <td>12.12.12.5</td>
-        <td>Gi1/0/1</td>
-        <td>12.12.12.6</td>
-        <td>12.12.12.4/30</td>
-    </tr>
-    <tr>
-        <td>sw1 &harr; Versa</td>
-        <td>Gi1/0/3</td>
-        <td>12.12.12.9</td>
-        <td>Vni-0/2</td>
-        <td>12.12.12.10</td>
-        <td>12.12.12.8/30</td>
-    </tr>
-    <tr>
-        <td>sw1 &harr; Cumulus</td>
-        <td>Gi1/0/4</td>
-        <td>12.12.12.13</td>
-        <td>swp1</td>
-        <td>12.12.12.14</td>
-        <td>12.12.12.12/30</td>
-    </tr>
+  <tr><th>VLAN</th><th>Name</th><th>VNI</th><th>Subnet</th><th>Purpose</th><th>Devices</th></tr>
+  <tr><td>1101</td><td>VRF1_CORE_VLAN</td><td>50101</td><td>&mdash;</td><td>L3VNI (Core Routing)</td><td>sw2, sw3</td></tr>
+  <tr style="background:#deebff"><td><strong>1151</strong></td><td><strong>VRF1_ACCESS_VLAN</strong></td><td><strong>401151</strong></td><td><strong>192.168.1.0/25</strong></td><td><strong>L2 Extension (All VTEPs)</strong></td><td><strong>sw2, sw3, Versa, Cumulus</strong></td></tr>
+  <tr><td>1152</td><td>VRF1_ACCESS_VLAN_2</td><td>401152</td><td>192.168.2.0/25</td><td>Access VLAN</td><td>sw2, sw3</td></tr>
+  <tr><td>1153</td><td>VRF1_ACCESS_VLAN_3</td><td>401153</td><td>192.168.3.0/25</td><td>Access VLAN</td><td>sw2, sw3</td></tr>
 </table>
 
-<!-- ===================== SECTION 4 ===================== -->
-<h2 id="s4">4. VLAN and VNI Mapping</h2>
-
-<table>
-    <tr>
-        <th>VLAN</th>
-        <th>Name</th>
-        <th>VNI</th>
-        <th>Subnet</th>
-        <th>Purpose</th>
-        <th>Devices</th>
-    </tr>
-    <tr>
-        <td>1101</td>
-        <td>VRF1_CORE_VLAN</td>
-        <td>50101</td>
-        <td>-</td>
-        <td>L3VNI (Core Routing)</td>
-        <td>sw2, sw3</td>
-    </tr>
-    <tr>
-        <td><strong>1151</strong></td>
-        <td>VRF1_ACCESS_VLAN</td>
-        <td><strong>401151</strong></td>
-        <td>192.168.1.0/25</td>
-        <td><strong>L2 Extension (All VTEPs)</strong></td>
-        <td><strong>sw2, sw3, Versa, Cumulus</strong></td>
-    </tr>
-    <tr>
-        <td>1152</td>
-        <td>VRF1_ACCESS_VLAN_2</td>
-        <td>401152</td>
-        <td>192.168.2.0/25</td>
-        <td>Access VLAN</td>
-        <td>sw2, sw3</td>
-    </tr>
-    <tr>
-        <td>1153</td>
-        <td>VRF1_ACCESS_VLAN_3</td>
-        <td>401153</td>
-        <td>192.168.3.0/25</td>
-        <td>Access VLAN</td>
-        <td>sw2, sw3</td>
-    </tr>
-</table>
-
-<div class="page-break"></div>
-
-<!-- ===================== SECTION 5 ===================== -->
+<!-- ==================== 5 ==================== -->
 <h2 id="s5">5. Underlay Configuration (OSPF)</h2>
 
-<h3>5.1 sw1 OSPF and Interface Configuration (Spine)</h3>
-<pre class="cisco">! sw1 - OSPF underlay
+<h3>5.1 sw1 &mdash; Spine (Cisco IOS-XE)</h3>
+<pre class="dark">! sw1 - OSPF underlay + interfaces
 router ospf 100
  router-id 1.1.1.1
  auto-cost reference-bandwidth 100000
- timers throttle spf 10 100 5000
- timers lsa arrival 80
-!
+
 interface Loopback0
  ip address 1.1.1.1 255.255.255.255
  ip ospf 100 area 100
-!
+
 interface GigabitEthernet1/0/1
  description to sw2
  no switchport
  ip address 12.12.12.1 255.255.255.252
  ip ospf network point-to-point
  ip ospf 100 area 100
-!
+
 interface GigabitEthernet1/0/2
  description to sw3
  no switchport
  ip address 12.12.12.5 255.255.255.252
  ip ospf network point-to-point
  ip ospf 100 area 100
-!
+
 interface GigabitEthernet1/0/3
  description to Versa FlexVNF
  no switchport
@@ -626,7 +238,7 @@ interface GigabitEthernet1/0/3
  ip ospf network point-to-point
  ip ospf mtu-ignore
  ip ospf 100 area 100
-!
+
 interface GigabitEthernet1/0/4
  description to Cumulus_Nvidia
  no switchport
@@ -636,12 +248,13 @@ interface GigabitEthernet1/0/4
  ip ospf mtu-ignore
  ip ospf 100 area 100</pre>
 
-<div class="warning-box">
-    <strong>MTU Mismatch Note:</strong> Cumulus Linux defaults to MTU 9216. Cisco uses MTU 1550 on the link. To prevent OSPF ExStart/DBD issues, <code>ip ospf mtu-ignore</code> is configured on both ends. Alternatively, match MTU on both sides.
+<div class="panel panel-warning">
+<strong>MTU Mismatch</strong>
+Cumulus defaults to MTU 9216. Cisco uses 1550 on this link. <code>ip ospf mtu-ignore</code> is configured on both ends to prevent OSPF ExStart/DBD failures. Alternatively, match MTU on both sides.
 </div>
 
-<h3>5.2 Versa Underlay OSPF Configuration</h3>
-<pre class="versa">routing-instances routing-instance Underlay {
+<h3>5.2 Versa &mdash; Underlay OSPF</h3>
+<pre class="dark">routing-instances routing-instance Underlay {
     instance-type virtual-router
     networks      [ OSPF_Underlay ]
     evpn-core
@@ -671,8 +284,8 @@ interface GigabitEthernet1/0/4
     }
 }</pre>
 
-<h3>5.3 OSPF Neighbor Verification (sw1)</h3>
-<pre class="cisco">sw1# show ip ospf neighbor
+<h3>5.3 OSPF Verification (sw1)</h3>
+<pre>sw1# show ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
 12.12.12.10       0   FULL/  -        00:00:32    12.12.12.10     GigabitEthernet1/0/3
@@ -680,56 +293,44 @@ Neighbor ID     Pri   State           Dead Time   Address         Interface
 1.1.1.2           0   FULL/  -        00:00:31    12.12.12.2      GigabitEthernet1/0/1
 1.1.1.5           0   FULL/  -        00:00:37    12.12.12.14     GigabitEthernet1/0/4</pre>
 
-<div class="success-box">
-    <strong>OSPF Status:</strong> All four OSPF adjacencies are FULL &mdash; sw2 (1.1.1.2), sw3 (1.1.1.3), Versa (12.12.12.10), Cumulus (1.1.1.5).
-</div>
+<div class="panel panel-success"><strong>OSPF Status</strong> All four adjacencies FULL &mdash; sw2, sw3, Versa, Cumulus.</div>
 
-<div class="page-break"></div>
+<!-- ==================== 6 ==================== -->
+<h2 id="s6">6. BGP EVPN Overlay</h2>
 
-<!-- ===================== SECTION 6 ===================== -->
-<h2 id="s6">6. BGP EVPN Overlay Configuration</h2>
-
-<h3>6.1 sw1 BGP Configuration (Route Reflector)</h3>
-<pre class="cisco">router bgp 6500
+<h3>6.1 sw1 &mdash; Route Reflector</h3>
+<pre class="dark">router bgp 6500
  bgp router-id interface Loopback0
  bgp log-neighbor-changes
- !
+
  template peer-session spine-peer-session
   remote-as 6500
   update-source Loopback0
  exit-peer-session
- !
- ! Cisco Leaf VTEPs
+
  neighbor 1.1.1.2 inherit peer-session spine-peer-session
  neighbor 1.1.1.3 inherit peer-session spine-peer-session
- !
- ! Versa FlexVNF VTEP
  neighbor 1.1.1.4 inherit peer-session spine-peer-session
  neighbor 1.1.1.4 send-community both
- !
- ! Cumulus Nvidia VTEP
  neighbor 1.1.1.5 inherit peer-session spine-peer-session
  neighbor 1.1.1.5 send-community both
- !
+
  address-family l2vpn evpn
   neighbor 1.1.1.2 activate
   neighbor 1.1.1.2 send-community both
   neighbor 1.1.1.2 route-reflector-client
-  !
   neighbor 1.1.1.3 activate
   neighbor 1.1.1.3 send-community both
-  !
   neighbor 1.1.1.4 activate
   neighbor 1.1.1.4 send-community both
   neighbor 1.1.1.4 route-reflector-client
-  !
   neighbor 1.1.1.5 activate
   neighbor 1.1.1.5 send-community both
   neighbor 1.1.1.5 route-reflector-client
  exit-address-family</pre>
 
-<h3>6.2 Versa BGP EVPN Configuration</h3>
-<pre class="versa">routing-instances routing-instance Underlay {
+<h3>6.2 Versa &mdash; BGP EVPN</h3>
+<pre class="dark">routing-instances routing-instance Underlay {
     protocols {
         bgp 3023 {
             router-id     1.1.1.4
@@ -746,70 +347,36 @@ Neighbor ID     Pri   State           Dead Time   Address         Interface
     }
 }</pre>
 
-<div class="info-box">
-    <strong>Note:</strong> Versa uses <code>local-as 6500</code> override to match the Cisco fabric AS number while maintaining its own internal AS (64515).
-</div>
+<div class="panel panel-info"><strong>Note</strong> Versa uses <code>local-as 6500</code> override to match the fabric AS while keeping its internal AS 64515.</div>
 
-<h3>6.3 BGP EVPN Verification - sw1</h3>
-<pre class="cisco">sw1# show bgp l2vpn evpn summary
+<h3>6.3 BGP Verification (sw1)</h3>
+<pre>sw1# show bgp l2vpn evpn summary
 BGP router identifier 1.1.1.1, local AS number 6500
 
-Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
-1.1.1.2         4         6500     224     290      106    0    0 03:03:30       18
-1.1.1.3         4         6500     234     233      106    0    0 03:04:07       15
-1.1.1.4         4         6500     429     454      106    0    0 03:03:42        1
-1.1.1.5         4         6500    1148    1130        0    0    0 00:48:57        2</pre>
+Neighbor        V    AS   MsgRcvd MsgSent  TblVer InQ OutQ Up/Down  State/PfxRcd
+1.1.1.2         4  6500      224     290     106    0    0 03:03:30       18
+1.1.1.3         4  6500      234     233     106    0    0 03:04:07       15
+1.1.1.4         4  6500      429     454     106    0    0 03:03:42        1
+1.1.1.5         4  6500     1148    1130       0    0    0 00:48:57        2</pre>
 
-<div class="success-box">
-    <strong>BGP Status:</strong> All four EVPN peers established. Cumulus advertises 2 routes (1x Type-2 MAC/IP + 1x Type-3 IMET). Versa advertises 1 route (Type-3 IMET).
-</div>
+<div class="panel panel-success"><strong>BGP Status</strong> All four EVPN peers established. Cumulus: 2 routes (Type-2 + Type-3). Versa: 1 route (Type-3 IMET).</div>
 
-<div class="page-break"></div>
-
-<!-- ===================== SECTION 7 ===================== -->
-<h2 id="s7">7. L2VPN EVPN Instance Configuration</h2>
+<!-- ==================== 7 ==================== -->
+<h2 id="s7">7. L2VPN EVPN Instances</h2>
 
 <h3>7.1 Route Target Mapping</h3>
-
 <table>
-    <tr>
-        <th>Device</th>
-        <th>Route Distinguisher</th>
-        <th>Export RT</th>
-        <th>Import RT</th>
-    </tr>
-    <tr>
-        <td><span class="vendor-tag vendor-cisco">Cisco</span> sw2</td>
-        <td>1.1.1.2:1151 (auto)</td>
-        <td>1151:1</td>
-        <td>1151:1, 65000:1151, <strong>2:2</strong></td>
-    </tr>
-    <tr>
-        <td><span class="vendor-tag vendor-cisco">Cisco</span> sw3</td>
-        <td>1.1.1.3:1151 (auto)</td>
-        <td>1151:1</td>
-        <td>1151:1</td>
-    </tr>
-    <tr>
-        <td><span class="vendor-tag vendor-versa">Versa</span></td>
-        <td>2L:122</td>
-        <td><strong>2:2</strong>, 1151:1</td>
-        <td>2:2, 1151:1</td>
-    </tr>
-    <tr>
-        <td><span class="vendor-tag vendor-cumulus">Cumulus</span></td>
-        <td>1.1.1.5:2 (auto)</td>
-        <td>1151:1</td>
-        <td>1151:1</td>
-    </tr>
+  <tr><th>Device</th><th>RD</th><th>Export RT</th><th>Import RT</th></tr>
+  <tr><td><span class="badge badge-cisco">CISCO</span> sw2</td><td>1.1.1.2:1151 (auto)</td><td>1151:1</td><td>1151:1, 65000:1151, <strong>2:2</strong></td></tr>
+  <tr><td><span class="badge badge-cisco">CISCO</span> sw3</td><td>1.1.1.3:1151 (auto)</td><td>1151:1</td><td>1151:1</td></tr>
+  <tr><td><span class="badge badge-versa">VERSA</span></td><td>2L:122</td><td><strong>2:2</strong>, 1151:1</td><td>2:2, 1151:1</td></tr>
+  <tr><td><span class="badge badge-cumulus">CUMULUS</span></td><td>1.1.1.5:2 (auto)</td><td>1151:1</td><td>1151:1</td></tr>
 </table>
 
-<div class="warning-box">
-    <strong>Critical - Route Target Matching:</strong> Versa exports RT <code>2:2</code> in addition to <code>1151:1</code>. Any device that only imports <code>1151:1</code> will still receive Versa routes. However, sw2 also explicitly imports <code>2:2</code> for completeness.
-</div>
+<div class="panel panel-warning"><strong>Route Target</strong> Versa exports RT <code>2:2</code> in addition to <code>1151:1</code>. All devices import <code>1151:1</code> so Versa routes are received. sw2 also imports <code>2:2</code> for completeness.</div>
 
-<h3>7.2 sw2 L2VPN EVPN Instance</h3>
-<pre class="cisco">l2vpn evpn instance 1151 vlan-based
+<h3>7.2 sw2 L2VPN &amp; NVE</h3>
+<pre class="dark">l2vpn evpn instance 1151 vlan-based
  encapsulation vxlan
  route-target export 1151:1
  route-target import 1151:1
@@ -817,10 +384,9 @@ Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State
  route-target import 2:2
 !
 vlan configuration 1151
- member evpn-instance 1151 vni 401151</pre>
-
-<h3>7.3 sw2 NVE Interface</h3>
-<pre class="cisco">interface nve1
+ member evpn-instance 1151 vni 401151
+!
+interface nve1
  no ip address
  source-interface Loopback0
  host-reachability protocol bgp
@@ -829,8 +395,12 @@ vlan configuration 1151
  member vni 401152 ingress-replication local-routing
  member vni 401153 ingress-replication local-routing</pre>
 
-<h3>7.4 Versa Virtual-Switch Configuration</h3>
-<pre class="versa">routing-instances routing-instance VERSA-default-switch {
+<h3>7.3 Versa Virtual-Switch</h3>
+
+<details>
+<summary>Click to expand Versa virtual-switch configuration</summary>
+<div class="detail-body">
+<pre class="dark">routing-instances routing-instance VERSA-default-switch {
     instance-type       virtual-switch
 
     bridge-options {
@@ -843,9 +413,7 @@ vlan configuration 1151
             bridge-options {
                 bridge-domain-arp-suppression enable
             }
-            vxlan {
-                vni 401151
-            }
+            vxlan { vni 401151 }
         }
     }
 
@@ -861,33 +429,26 @@ vlan configuration 1151
         }
     }
 }</pre>
-
-<div class="page-break"></div>
-
-<!-- ===================== SECTION 8 ===================== -->
-<h2 id="s8">8. Cumulus Linux (NVIDIA) Configuration</h2>
-
-<div class="info-box">
-    <strong>Platform:</strong> Cumulus Linux 5.x uses <strong>NVUE</strong> (<code>nv set</code>) as the primary configuration method. All commands below are NVUE syntax. Apply with <code>nv config apply -y</code>.
 </div>
+</details>
 
-<h3>8.1 Complete NVUE Configuration</h3>
-<pre class="cumulus"># ========================================
-# Cumulus Linux (NVIDIA) - NVUE Commands
-# Hostname: cumulus | Mgmt: 192.168.20.172
-# ========================================
+<!-- ==================== 8 ==================== -->
+<h2 id="s8">8. Cumulus Linux (NVIDIA) &mdash; NVUE Configuration</h2>
 
-# --- Loopback (VTEP Source) ---
+<div class="panel panel-info"><strong>Platform</strong> Cumulus Linux 5.x uses <strong>NVUE</strong> (<code>nv set</code>) as the primary configuration method. Apply changes with <code>nv config apply -y</code>.</div>
+
+<h3>8.1 Complete NVUE Commands</h3>
+<pre class="dark"><span style="color:#6a9955"># ── Loopback (VTEP Source) ──</span>
 nv set interface lo type loopback
 nv set interface lo ip address 1.1.1.5/32
 
-# --- Underlay Link to sw1 (swp1) ---
+<span style="color:#6a9955"># ── Underlay Link to sw1 ──</span>
 nv set interface swp1 type swp
 nv set interface swp1 link state up
 nv set interface swp1 ip address 12.12.12.14/30
 nv set interface swp1 link mtu 9216
 
-# --- OSPF Underlay ---
+<span style="color:#6a9955"># ── OSPF Underlay ──</span>
 nv set router ospf enable on
 nv set router ospf router-id 1.1.1.5
 nv set vrf default router ospf enable on
@@ -899,7 +460,7 @@ nv set interface swp1 router ospf area 100
 nv set interface swp1 router ospf network-type point-to-point
 nv set interface swp1 router ospf mtu-ignore on
 
-# --- BGP EVPN Overlay ---
+<span style="color:#6a9955"># ── BGP EVPN Overlay ──</span>
 nv set router bgp enable on
 nv set router bgp autonomous-system 6500
 nv set router bgp router-id 1.1.1.5
@@ -910,519 +471,394 @@ nv set vrf default router bgp neighbor 1.1.1.1 update-source lo
 nv set vrf default router bgp address-family l2vpn-evpn enable on
 nv set vrf default router bgp neighbor 1.1.1.1 address-family l2vpn-evpn enable on
 
-# --- VXLAN / NVE ---
+<span style="color:#6a9955"># ── VXLAN / NVE ──</span>
 nv set nve vxlan enable on
 nv set nve vxlan source address 1.1.1.5
 nv set evpn enable on
 
-# --- Bridge + VLAN 1151 + VNI 401151 ---
+<span style="color:#6a9955"># ── Bridge + VLAN 1151 + VNI ──</span>
 nv set bridge domain br_default vlan 1151 vni 401151
 nv set evpn vni 401151 route-target export 1151:1
 nv set evpn vni 401151 route-target import 1151:1
 
-# --- Access Port (swp2) - Trunk allowing all VLANs ---
+<span style="color:#6a9955"># ── Access Port (swp2) ──</span>
 nv set interface swp2 type swp
 nv set interface swp2 link state up
 nv set interface swp2 bridge domain br_default
 nv set interface swp2 bridge domain br_default stp admin-edge on
 nv set interface swp2 bridge domain br_default stp bpdu-guard on
 
-# --- SVI for VLAN 1151 ---
+<span style="color:#6a9955"># ── SVI for VLAN 1151 ──</span>
 nv set interface vlan1151 type svi
 nv set interface vlan1151 vlan 1151
 nv set interface vlan1151 ip address 192.168.1.15/25
 
-# --- Apply Configuration ---
+<span style="color:#6a9955"># ── Apply ──</span>
 nv config apply -y</pre>
 
-<h3>8.2 NVUE Configuration Verification</h3>
+<h3>8.2 Cumulus Verification</h3>
 
-<p>To view the running configuration in NVUE set-based format:</p>
-<pre class="cumulus">nv config show --output commands</pre>
-
-<h3>8.3 Cumulus OSPF Verification</h3>
-<pre class="cumulus">cumulus@cumulus:~$ sudo vtysh -c "show ip ospf neighbor"
+<pre>cumulus@cumulus:~$ sudo vtysh -c "show ip ospf neighbor"
 
 Neighbor ID     Pri State           Dead Time Address         Interface
 1.1.1.1           1 Full/DROther      39.892s 12.12.12.13     swp1:12.12.12.14</pre>
 
-<h3>8.4 Cumulus BGP EVPN Verification</h3>
-<pre class="cumulus">cumulus@cumulus:~$ sudo vtysh -c "show bgp l2vpn evpn summary"
+<pre>cumulus@cumulus:~$ sudo vtysh -c "show bgp l2vpn evpn summary"
 
 BGP router identifier 1.1.1.5, local AS number 6500 vrf-id 0
-BGP table version 0
-RIB entries 17, using 3400 bytes of memory
 Peers 1, using 23 KiB of memory
 
-Neighbor        V   AS   MsgRcvd  MsgSent  TblVer InQ OutQ Up/Down  State/PfxRcd  PfxSnt
-1.1.1.1         4  6500    1148     1130       0    0    0 00:48:57           25       2</pre>
+Neighbor        V   AS   MsgRcvd  MsgSent  Up/Down  State/PfxRcd  PfxSnt
+1.1.1.1         4  6500    1148     1130   00:48:57           25       2</pre>
 
-<h3>8.5 Cumulus EVPN VNI Status</h3>
-<pre class="cumulus">cumulus@cumulus:~$ sudo vtysh -c "show evpn vni 401151"
+<pre>cumulus@cumulus:~$ sudo vtysh -c "show evpn vni 401151"
 
 VNI: 401151
  Type: L2
  Vlan: 1151
  Bridge: br_default
- Tenant VRF: default
  VxLAN interface: vxlan48
- VxLAN ifIndex: 14
  Local VTEP IP: 1.1.1.5
- Mcast group: 0.0.0.0
  Remote VTEPs for this VNI:
   1.1.1.4 flood: HER
   1.1.1.3 flood: HER
   1.1.1.2 flood: HER
- Number of MACs (local and remote) known for this VNI: 6
- Number of ARPs (IPv4 and IPv6, local and remote) known for this VNI: 6
- Advertise-gw-macip: No
- Advertise-svi-macip: No</pre>
+ Number of MACs (local and remote): 6
+ Number of ARPs (local and remote): 6</pre>
 
-<h3>8.6 Cumulus Bridge FDB (MAC Table)</h3>
-<pre class="cumulus">cumulus@cumulus:~$ bridge fdb show dev vxlan48
+<pre>cumulus@cumulus:~$ bridge fdb show dev vxlan48
 
-aa:bb:cc:00:27:00 dst 1.1.1.3 self extern_learn    # sw3 client
-aa:bb:cc:00:24:00 dst 1.1.1.2 self extern_learn    # sw2 client
-52:54:00:91:2c:07 dst 1.1.1.3 self extern_learn    # sw3 client 2
-52:54:00:c4:b4:a1 dst 1.1.1.2 self extern_learn    # sw2 client 2
-00:00:00:00:00:00 dst 1.1.1.2 self permanent       # BUM flooding
-00:00:00:00:00:00 dst 1.1.1.3 self permanent       # BUM flooding
-00:00:00:00:00:00 dst 1.1.1.4 self permanent       # BUM flooding</pre>
+aa:bb:cc:00:27:00 dst 1.1.1.3 self extern_learn    <span style="color:#6a9955"># sw3 client</span>
+aa:bb:cc:00:24:00 dst 1.1.1.2 self extern_learn    <span style="color:#6a9955"># sw2 client</span>
+52:54:00:91:2c:07 dst 1.1.1.3 self extern_learn
+52:54:00:c4:b4:a1 dst 1.1.1.2 self extern_learn
+00:00:00:00:00:00 dst 1.1.1.2 self permanent       <span style="color:#6a9955"># BUM flooding</span>
+00:00:00:00:00:00 dst 1.1.1.3 self permanent
+00:00:00:00:00:00 dst 1.1.1.4 self permanent</pre>
 
-<h3>8.7 Cumulus EVPN ARP Cache</h3>
-<pre class="cumulus">cumulus@cumulus:~$ sudo vtysh -c "show evpn arp-cache vni 401151"
+<div class="panel panel-success"><strong>Cumulus EVPN Status</strong> VNI 401151 active. 3 remote VTEPs discovered. All remote MACs learned via EVPN Type-2 routes. HER active for BUM.</div>
 
-Number of ARPs (local and remote) known for this VNI: 3
-Neighbor        Type   Flags State    MAC               Remote VTEP
-192.168.1.23    remote       inactive aa:bb:cc:00:27:00 1.1.1.3
-192.168.1.103   remote       inactive 52:54:00:91:2c:07 1.1.1.3
-192.168.1.22    remote       inactive aa:bb:cc:00:24:00 1.1.1.2</pre>
-
-<div class="success-box">
-    <strong>Cumulus EVPN Status:</strong> VNI 401151 active with 3 remote VTEPs discovered (sw2: 1.1.1.2, sw3: 1.1.1.3, Versa: 1.1.1.4). All remote MACs learned via EVPN Type-2 routes. HER (Head-End Replication) active for BUM traffic.
-</div>
-
-<div class="page-break"></div>
-
-<!-- ===================== SECTION 9 ===================== -->
+<!-- ==================== 9 ==================== -->
 <h2 id="s9">9. NVE Peer Verification</h2>
 
-<h3>9.1 sw2 NVE Peers for VNI 401151</h3>
-<pre class="cisco">sw2# show nve peers vni 401151
+<pre>sw2# show nve peers vni 401151
 
-Interface  VNI      Type Peer-IP          RMAC/Num_RTs   eVNI     state flags UP time
-nve1       401151   L2CP 1.1.1.3          3              401151     UP   N/A  06:01:13
-nve1       401151   L2CP 1.1.1.4          1              401151     UP   N/A  00:49:17
-nve1       401151   L2CP 1.1.1.5          2              401151     UP   N/A  00:48:57</pre>
+Interface  VNI      Type Peer-IP     RMAC/Num_RTs  eVNI     state  UP time
+nve1       401151   L2CP 1.1.1.3     3             401151     UP   06:01:13
+nve1       401151   L2CP 1.1.1.4     1             401151     UP   00:49:17
+nve1       401151   L2CP 1.1.1.5     2             401151     UP   00:48:57</pre>
 
-<h3>9.2 Cumulus VXLAN Interface Details</h3>
-<pre class="cumulus">cumulus@cumulus:~$ ip -d link show vxlan48
+<pre>cumulus@cumulus:~$ ip -d link show vxlan48
 
-14: vxlan48: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 9216 qdisc noqueue
+14: vxlan48: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 9216
     master br_default state UNKNOWN
-    link/ether 3a:f9:9b:95:ee:76 brd ff:ff:ff:ff:ff:ff
-    vxlan id 401151 local 1.1.1.5 srcport 0 0 dstport 4789
-    nolearning ttl 64 ageing 300 udpcsum gbp
-    bridge_slave state forwarding priority 8 cost 100
-    learning off flood on neigh_suppress on vlan_tunnel on</pre>
+    vxlan id 401151 local 1.1.1.5 dstport 4789
+    nolearning ttl 64 udpcsum <strong>gbp</strong>
+    bridge_slave state <strong>forwarding</strong> learning <strong>off</strong> neigh_suppress <strong>on</strong></pre>
 
-<div class="info-box">
-    <strong>Key Parameters:</strong> <code>nolearning</code> (data-plane MAC learning disabled, EVPN controls FDB), <code>neigh_suppress</code> (ARP suppression), <code>gbp</code> (VXLAN Group Based Policy enabled - required for Versa interop).
-</div>
+<div class="panel panel-info"><strong>Key Parameters</strong> <code>nolearning</code> = EVPN controls FDB, <code>neigh_suppress</code> = ARP suppression, <code>gbp</code> = VXLAN-GBP enabled (required for Versa interop).</div>
 
-<div class="page-break"></div>
+<!-- ==================== 10 ==================== -->
+<h2 id="s10">10. MAC Address Learning</h2>
 
-<!-- ===================== SECTION 10 ===================== -->
-<h2 id="s10">10. MAC Address Learning Verification</h2>
+<h3>Versa Bridge Table</h3>
+<pre>admin@Cisco-EVPN-Br1-cli> show bridge
 
-<h3>10.1 Versa Bridge Table</h3>
-<pre class="versa">admin@Cisco-EVPN-Br1-cli> show bridge
+ROUTING INSTANCE         BRIDGE     MAC-ADDRESS        TYPE  VLAN  TUNNEL EP
+VERSA-default-switch     VLAN-1151  aa:bb:cc:00:27:00  CA    1151  1.1.1.3
+VERSA-default-switch     VLAN-1151  aa:bb:cc:00:24:00  CA    1151  1.1.1.2</pre>
 
-ROUTING              BRIDGE         LOGICAL      MAC-ADDRESS          MAC    VLANID  OR TUNNEL
-INSTANCE             NAME           INTERFACE                         TYPE           END POINT
---------------------------------------------------------------------------------------------
-VERSA-default-switch VLAN-1151      dtvi-0/56    aa:bb:cc:00:27:00    CA     1151    1.1.1.3
-VERSA-default-switch VLAN-1151      dtvi-0/58    aa:bb:cc:00:24:00    CA     1151    1.1.1.2</pre>
+<h3>sw2 EVPN MAC Table</h3>
+<pre>sw2# show l2vpn evpn mac evi 1151
 
-<h3>10.2 sw2 EVPN MAC Table</h3>
-<pre class="cisco">sw2# show l2vpn evpn mac evi 1151
+MAC Address    EVI   VLAN  Next Hop(s)
+aabb.cc00.2400 1151  1151  Gi1/0/4:1151    (local)
+aabb.cc00.2700 1151  1151  1.1.1.3         (remote - sw3)
+aabb.cc00.2f10 1151  1151  1.1.1.4         (remote - Versa)</pre>
 
-MAC Address    EVI   VLAN  ESI                      Ether Tag  Next Hop(s)
--------------- ----- ----- ------------------------ ---------- ---------------
-aabb.cc00.2400 1151  1151  0000.0000.0000.0000.0000 0          Gi1/0/4:1151
-aabb.cc00.2700 1151  1151  0000.0000.0000.0000.0000 0          1.1.1.3
-aabb.cc00.2f10 1151  1151  0000.0000.0000.0000.0000 0          1.1.1.4</pre>
+<div class="panel panel-success"><strong>Cross-Vendor MAC Learning Confirmed</strong> All VTEPs see each other's client MACs via EVPN Type-2 routes.</div>
 
-<div class="success-box">
-    <strong>Cross-Vendor MAC Learning Confirmed:</strong> All VTEPs see each other's client MACs. Cisco learns Versa MACs via EVPN Type-2, Cumulus learns all remote MACs via FDB with <code>extern_learn</code> flag.
-</div>
-
-<div class="page-break"></div>
-
-<!-- ===================== SECTION 11 ===================== -->
+<!-- ==================== 11 ==================== -->
 <h2 id="s11">11. VXLAN-GBP Interoperability Issue</h2>
 
-<div class="danger-box">
-    <strong>Issue ID: NET-2026-001</strong><br>
-    <strong>Severity:</strong> High &mdash; Complete traffic loss between Cumulus and Versa VTEPs<br>
-    <strong>Symptom:</strong> Ping from Cumulus client (192.168.1.12) to Versa client (192.168.1.10) fails with 100% packet loss, while EVPN control plane is fully operational.<br>
-    <strong>Root Cause:</strong> Versa FlexVNF sends VXLAN packets with GBP (Group Based Policy) flags. Linux kernel VXLAN driver silently drops packets with GBP flags unless the VXLAN interface is created with the <code>gbp</code> option.
+<div class="panel panel-error">
+<strong>Issue: NET-2026-001 &mdash; Severity: HIGH</strong>
+Ping from Cumulus client (192.168.1.12) to Versa client (192.168.1.10) fails with 100% packet loss. EVPN control plane is fully operational. Root cause: Versa FlexVNF sends VXLAN packets with GBP (Group Based Policy) flags. Linux kernel silently drops GBP-flagged packets on non-GBP VXLAN interfaces.
 </div>
 
 <h3>11.1 What is VXLAN-GBP?</h3>
 
-<p><strong>VXLAN-GBP</strong> (Group Based Policy) is an extension to the standard VXLAN header defined in <em>draft-smith-vxlan-group-policy</em>. It adds a <strong>Group Policy ID</strong> (also called SGT - Security Group Tag) to the VXLAN header, enabling micro-segmentation across the VXLAN fabric.</p>
+<p><strong>VXLAN-GBP</strong> (Group Based Policy) is an extension to the standard VXLAN header (<em>draft-smith-vxlan-group-policy</em>). It adds a <strong>Group Policy ID</strong> (SGT) to the VXLAN header for micro-segmentation.</p>
 
-<h4>Standard VXLAN Header (RFC 7348)</h4>
+<div class="cols">
+<div>
+<h4>Standard VXLAN (RFC 7348)</h4>
 <div class="bit-diagram">
-<pre style="background:none;border:none;margin:0;padding:0;color:#333;">
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|R|R|R|R|<b style="color:#1565c0">I</b>|R|R|R|         Reserved (24 bits)                    |
+|R|R|R|R|<strong style="color:#0052cc">I</strong>|R|R|R|         Reserved (24 bits)                    |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |              VXLAN Network Identifier (VNI)   |   Reserved    |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-Flags byte = 0x08  (only I-bit set, indicating valid VNI)
-</pre>
+Flags byte = <strong style="color:#00875a">0x08</strong>  (I-bit only)
 </div>
-
-<h4>VXLAN-GBP Header (draft-smith-vxlan-group-policy)</h4>
+</div>
+<div>
+<h4>VXLAN-GBP (draft-smith)</h4>
 <div class="bit-diagram">
-<pre style="background:none;border:none;margin:0;padding:0;color:#333;">
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|<b style="color:#e53935">G</b>|R|R|<b style="color:#e53935">D</b>|<b style="color:#1565c0">I</b>|R|R|<b style="color:#e53935">A</b>|<b style="color:#e53935"> Group Policy ID (16 bits) </b>|   Reserved    |
+|<strong style="color:#de350b">G</strong>|R|R|<strong style="color:#de350b">D</strong>|<strong style="color:#0052cc">I</strong>|R|R|<strong style="color:#de350b">A</strong>|<strong style="color:#de350b"> Group Policy ID (16 bits) </strong>|   Reserved    |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |              VXLAN Network Identifier (VNI)   |   Reserved    |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-<b style="color:#e53935">G-bit (bit 0):</b>  GBP Extension flag. When set (1), indicates GBP header is present.
-<b style="color:#e53935">D-bit (bit 3):</b>  "Don't Learn" flag. Tells remote VTEP not to learn this source MAC.
-<b style="color:#1565c0">I-bit (bit 4):</b>  VXLAN VNI valid flag (same as standard VXLAN).
-<b style="color:#e53935">A-bit (bit 7):</b>  "Applied" flag. Policy was already applied at source.
-<b style="color:#e53935">Group Policy ID:</b> 16-bit SGT (Security Group Tag) for micro-segmentation.
-
-Flags byte = 0x88  (G-bit + I-bit set, GBP active)
-</pre>
+Flags byte = <strong style="color:#de350b">0x88</strong>  (G-bit + I-bit)
 </div>
+</div>
+</div>
+
+<table>
+<tr><th>Bit</th><th>Name</th><th>Description</th></tr>
+<tr><td><strong style="color:#de350b">G (bit 0)</strong></td><td>GBP Extension</td><td>When set, indicates GBP header present</td></tr>
+<tr><td><strong style="color:#de350b">D (bit 3)</strong></td><td>Don't Learn</td><td>Tells remote VTEP not to learn source MAC</td></tr>
+<tr><td><strong style="color:#0052cc">I (bit 4)</strong></td><td>VNI Valid</td><td>Same as standard VXLAN</td></tr>
+<tr><td><strong style="color:#de350b">A (bit 7)</strong></td><td>Applied</td><td>Policy already applied at source</td></tr>
+<tr><td><strong style="color:#de350b">Group Policy ID</strong></td><td>SGT</td><td>16-bit Security Group Tag</td></tr>
+</table>
 
 <h3>11.2 Packet Capture Evidence</h3>
 
-<p>The following evidence was captured from a pcap taken on the sw1 spine (between Cumulus 1.1.1.5 and Versa 1.1.1.4):</p>
+<p>Captured on sw1 spine between Cumulus (1.1.1.5) and Versa (1.1.1.4):</p>
 
-<h4>tshark Analysis - VXLAN Flags Comparison</h4>
-<pre class="pcap"># tshark -r BGP-EVPN.pcap -Y "vxlan" -T fields -e frame.number -e ip.src -e ip.dst -e vxlan.flags -e vxlan.vni
+<pre class="dark"><span style="color:#6a9955"># tshark -r BGP-EVPN.pcap -Y "vxlan" -T fields -e frame.number -e ip.src -e ip.dst -e vxlan.flags -e vxlan.vni</span>
 
-Frame  Source                        Destination                    Flags   VNI
------  ------                        -----------                    -----   ------
-11     1.1.1.5 (Cumulus->)           1.1.1.4 (->Versa)             0x0800  401151
-12     1.1.1.4 (Versa->)            1.1.1.5 (->Cumulus)            0x8808  401151
-13     1.1.1.5 (Cumulus->)           1.1.1.4 (->Versa)             0x0800  401151
-14     1.1.1.4 (Versa->)            1.1.1.5 (->Cumulus)            0x8808  401151
-...
-(pattern repeats for ALL packets)</pre>
+Frame  Source (outer)    Destination (outer)  Flags   VNI
+─────  ────────────────  ───────────────────  ──────  ──────
+11     1.1.1.5 Cumulus → 1.1.1.4 Versa       <span style="color:#4ec9b0">0x0800</span>  401151
+12     1.1.1.4 Versa  → 1.1.1.5 Cumulus      <span style="color:#f44747">0x8808</span>  401151
+13     1.1.1.5 Cumulus → 1.1.1.4 Versa       <span style="color:#4ec9b0">0x0800</span>  401151
+14     1.1.1.4 Versa  → 1.1.1.5 Cumulus      <span style="color:#f44747">0x8808</span>  401151
+...    (pattern repeats for ALL packets)</pre>
 
-<div class="danger-box">
-    <strong>Key Finding:</strong> Every VXLAN packet from Versa (1.1.1.4) has flags = <code>0x8808</code> (GBP enabled), while Cumulus and Cisco send <code>0x0800</code> (standard). The <code>0x88</code> in the first byte means <strong>both G-bit and I-bit</strong> are set. The <code>0x08</code> in the second byte is the Group Policy ID = 8.
-</div>
+<h3>11.3 Raw Hex Dump</h3>
 
-<h4>Raw Hex Dump - VXLAN Header Comparison</h4>
+<p><strong>Packet 11</strong> &mdash; Cumulus &rarr; Versa &mdash; <span class="badge badge-ok">Standard VXLAN</span></p>
+<pre class="dark hex">0x0020  01 04 a5 43 12 b5 00 82 e1 2e <span class="hl-green">08 00 00 00</span> 06 1e
+0x0030  ff 00 aa bb cc 00 2f 10 ...  (inner: 192.168.1.12 → .10 ICMP)
 
-<p><strong>Packet 11</strong> &mdash; Cumulus (1.1.1.5) &rarr; Versa (1.1.1.4) &mdash; <span class="badge badge-success">Standard VXLAN</span></p>
-<pre class="pcap">Offset  Hex                                              ASCII
-------  ------------------------------------------------ ----------------
-0x0000  52 54 00 20 06 21 52 54 00 db 28 d1 08 00 45 00  RT. .!RT..(...E.
-0x0010  00 96 5a 0a 00 00 3f 11 1d 43 01 01 01 05 01 01  ..Z...?..C......
-0x0020  01 04 a5 43 12 b5 00 82 e1 2e <span class="hex-highlight-green">08 00 00 00</span> 06 1e  ...C............
-0x0030  ff 00 aa bb cc 00 2f 10 aa bb cc 00 30 10 08 00  ....../.....0...
-0x0040  45 00 00 64 ... (inner IP: 192.168.1.12 -> 192.168.1.10 ICMP echo)
+        VXLAN flags: <span class="hl-green">08</span> = 0000 1000 = I-bit only (standard)</pre>
 
-         VXLAN Header: <span class="hex-highlight-green">08</span> 00 00 00  |  VNI: 06 1e ff (401151)
-         Flags byte:   0x08 = 0000 1000 = I-bit only (standard VXLAN)</pre>
+<p><strong>Packet 12</strong> &mdash; Versa &rarr; Cumulus &mdash; <span class="badge badge-versa">VXLAN-GBP</span></p>
+<pre class="dark hex">0x0020  01 05 12 b5 12 b5 00 82 f3 b4 <span class="hl-red">88 08 00 00</span> 06 1e
+0x0030  ff 00 aa bb cc 00 30 10 ...  (inner: 192.168.1.10 → .12 ICMP)
 
-<p><strong>Packet 12</strong> &mdash; Versa (1.1.1.4) &rarr; Cumulus (1.1.1.5) &mdash; <span class="badge badge-danger">VXLAN-GBP</span></p>
-<pre class="pcap">Offset  Hex                                              ASCII
-------  ------------------------------------------------ ----------------
-0x0000  52 54 00 db 28 d1 52 54 00 20 06 21 08 00 45 00  RT..(.RT. .!..E.
-0x0010  00 96 00 00 00 00 ff 11 b7 4c 01 01 01 04 01 01  .........L......
-0x0020  01 05 12 b5 12 b5 00 82 f3 b4 <span class="hex-highlight-red">88 08 00 00</span> 06 1e  ................
-0x0030  ff 00 aa bb cc 00 30 10 aa bb cc 00 2f 10 08 00  ......0...../...
-0x0040  45 00 00 64 ... (inner IP: 192.168.1.10 -> 192.168.1.12 ICMP reply)
+        VXLAN flags: <span class="hl-red">88</span> = 1000 1000 = G-bit + I-bit (GBP!)
+        Group Policy ID: 0x08 = SGT 8</pre>
 
-         VXLAN Header: <span class="hex-highlight-red">88</span> 08 00 00  |  VNI: 06 1e ff (401151)
-         Flags byte:   0x88 = 1000 1000 = G-bit + I-bit (GBP ENABLED!)
-         Group Policy ID: 0x08 = SGT 8</pre>
-
-<h3>11.3 Why This Causes Traffic Failure</h3>
-
-<p>The Linux kernel VXLAN driver has strict validation of VXLAN header flags:</p>
+<h3>11.4 Why This Causes Failure</h3>
 
 <ul>
-    <li>When a VXLAN interface is created <strong>without</strong> the <code>gbp</code> option, the kernel expects flags byte = <code>0x08</code> (I-bit only).</li>
-    <li>If the kernel receives a VXLAN packet with the G-bit set (<code>0x88</code>), it treats the packet as having invalid/unknown flags.</li>
-    <li>The kernel <strong>silently drops</strong> the packet &mdash; no error, no log, no ICMP unreachable.</li>
-    <li>This means the ICMP echo request from Cumulus reaches Versa, the ICMP echo reply comes back, but the reply is dropped at the Cumulus VXLAN decapsulation layer.</li>
+  <li>Linux kernel VXLAN driver validates header flags strictly</li>
+  <li>Without <code>gbp</code> option, kernel expects flags = <code>0x08</code> (I-bit only)</li>
+  <li>Receiving <code>0x88</code> (G-bit set) &rarr; packet <strong>silently dropped</strong></li>
+  <li>No error, no log, no ICMP unreachable</li>
+  <li>ICMP request reaches Versa, reply comes back, but reply is dropped at Cumulus VXLAN decap</li>
 </ul>
 
-<h4>Traffic Flow Diagram (Before Fix)</h4>
-<div class="diagram-container">
-<div class="diagram">
-Cumulus Client               Cumulus VTEP                   Versa VTEP              Versa Client
-192.168.1.12                 1.1.1.5                        1.1.1.4                 192.168.1.10
-     |                           |                              |                        |
-     |--- ICMP Echo Request ---->|                              |                        |
-     |                           |== VXLAN (flags=0x08) =======>|                        |
-     |                           |     Standard VXLAN           |--- ICMP Echo Req ----->|
-     |                           |                              |                        |
-     |                           |                              |<--- ICMP Echo Reply ----|
-     |                           |<== VXLAN (flags=0x88) =======|                        |
-     |                           |     GBP ENABLED!             |                        |
-     |                           |                              |                        |
-     |                        [DROPPED]                         |                        |
-     |                     Kernel rejects                       |                        |
-     |                   GBP flag on non-GBP                    |                        |
-     |                      VXLAN interface                     |                        |
-     |                           |                              |                        |
-     |     100% packet loss      |                              |                        |
-</div>
-</div>
+<pre style="background:#fafbfc;text-align:center;font-family:monospace;font-size:12px;line-height:1.6;padding:20px">
+Cumulus Client        Cumulus VTEP               Versa VTEP            Versa Client
+192.168.1.12          1.1.1.5                    1.1.1.4               192.168.1.10
+     │                    │                          │                      │
+     │── ICMP Request ──→ │                          │                      │
+     │                    │══ VXLAN flags=0x08 ═════→ │                      │
+     │                    │     (standard)            │── ICMP Request ────→ │
+     │                    │                          │                      │
+     │                    │                          │ ←── ICMP Reply ───── │
+     │                    │ ←══ VXLAN flags=0x88 ════ │                      │
+     │                    │     (GBP!)               │                      │
+     │                 <strong style="color:#de350b">[DROPPED]</strong>                      │                      │
+     │              kernel rejects GBP               │                      │
+     │              on non-GBP interface             │                      │
+</pre>
 
-<div class="info-box">
-    <strong>Important:</strong> This issue only affects Cumulus (Linux kernel VXLAN). Cisco IOS-XE silently ignores the GBP bits and processes the packet normally, which is why Cisco-to-Versa traffic worked without issues.
-</div>
+<div class="panel panel-info"><strong>Cisco Impact: None</strong> IOS-XE silently ignores GBP bits and processes packets normally. This only affects Linux kernel VXLAN (Cumulus).</div>
 
-<div class="page-break"></div>
-
-<!-- ===================== SECTION 12 ===================== -->
+<!-- ==================== 12 ==================== -->
 <h2 id="s12">12. VXLAN-GBP Fix &amp; Resolution</h2>
 
-<h3>12.1 Root Cause Summary</h3>
-
 <table>
-    <tr><th>Attribute</th><th>Detail</th></tr>
-    <tr><td>Affected Traffic</td><td>Cumulus &harr; Versa (both directions of data plane)</td></tr>
-    <tr><td>Root Cause</td><td>Versa FlexVNF always sends VXLAN-GBP headers (flags=0x88). Linux kernel drops GBP-flagged packets on non-GBP VXLAN interfaces.</td></tr>
-    <tr><td>Control Plane</td><td>Not affected. BGP EVPN routes exchanged correctly.</td></tr>
-    <tr><td>Cisco Impact</td><td>None. IOS-XE ignores GBP bits in received packets.</td></tr>
-    <tr><td>Fix Required On</td><td>Cumulus Linux only</td></tr>
+  <tr><th>Attribute</th><th>Detail</th></tr>
+  <tr><td>Affected Traffic</td><td>Cumulus &harr; Versa (data plane only)</td></tr>
+  <tr><td>Root Cause</td><td>Versa always sends VXLAN-GBP headers (flags=0x88). Linux kernel drops on non-GBP interfaces.</td></tr>
+  <tr><td>Control Plane</td><td>Not affected &mdash; BGP EVPN routes exchanged correctly</td></tr>
+  <tr><td>Cisco Impact</td><td>None &mdash; IOS-XE ignores GBP bits</td></tr>
+  <tr><td>Fix Required On</td><td>Cumulus Linux only</td></tr>
 </table>
 
-<h3>12.2 Resolution - Enable GBP on Cumulus VXLAN Interface</h3>
-
-<p>The fix requires recreating the vxlan48 interface with the <code>gbp</code> flag. This cannot be added to an existing interface &mdash; it must be specified at creation time.</p>
-
-<h4>Step 1: Delete and recreate vxlan48 with GBP</h4>
-<pre class="cumulus"># Remove existing vxlan48
+<h3>12.1 Step 1 &mdash; Recreate vxlan48 with GBP</h3>
+<pre class="dark"><span style="color:#6a9955"># Delete existing</span>
 sudo ip link del vxlan48
 
-# Recreate with GBP flag
-sudo ip link add vxlan48 type vxlan id 401151 local 1.1.1.5 dstport 4789 nolearning gbp
-
-# Bring interface up
+<span style="color:#6a9955"># Recreate with GBP flag</span>
+sudo ip link add vxlan48 type vxlan id 401151 local 1.1.1.5 dstport 4789 nolearning <strong style="color:#4ec9b0">gbp</strong>
 sudo ip link set vxlan48 up</pre>
 
-<h4>Step 2: Restore bridge and VLAN settings</h4>
-<pre class="cumulus"># Add vxlan48 back to bridge
+<h3>12.2 Step 2 &mdash; Restore bridge and VLAN settings</h3>
+<pre class="dark"><span style="color:#6a9955"># Add back to bridge</span>
 sudo ip link set vxlan48 master br_default
 
-# Fix VLAN mapping (CRITICAL - must be VLAN 1151, not default VLAN 1)
+<span style="color:#6a9955"># CRITICAL: Fix VLAN mapping (default PVID=1, must be 1151)</span>
 sudo bridge vlan del vid 1 dev vxlan48
 sudo bridge vlan add vid 1151 dev vxlan48 pvid untagged
 
-# Restore bridge port settings
-sudo bridge link set dev vxlan48 state 3          # forwarding
-sudo ip link set vxlan48 mtu 9216                 # match fabric MTU
-sudo bridge link set dev vxlan48 learning off      # EVPN controls FDB
-sudo bridge link set dev vxlan48 neigh_suppress on # ARP suppression
-sudo bridge link set dev vxlan48 vlan_tunnel on    # VLAN-VNI mapping</pre>
+<span style="color:#6a9955"># Restore bridge port settings</span>
+sudo bridge link set dev vxlan48 state 3          <span style="color:#6a9955"># forwarding</span>
+sudo ip link set vxlan48 mtu 9216                 <span style="color:#6a9955"># match fabric MTU</span>
+sudo bridge link set dev vxlan48 learning off      <span style="color:#6a9955"># EVPN controls FDB</span>
+sudo bridge link set dev vxlan48 neigh_suppress on <span style="color:#6a9955"># ARP suppression</span>
+sudo bridge link set dev vxlan48 vlan_tunnel on</pre>
 
-<h4>Step 3: Run NVUE apply to synchronize state</h4>
-<pre class="cumulus"># NVUE apply preserves the GBP flag if vxlan48 already exists with it
-nv config apply -y</pre>
+<h3>12.3 Step 3 &mdash; Sync with NVUE</h3>
+<pre class="dark">nv config apply -y   <span style="color:#6a9955"># preserves GBP flag if vxlan48 already exists with it</span></pre>
 
-<h4>Step 4: Verify</h4>
-<pre class="cumulus"># Confirm GBP is enabled
-ip -d link show vxlan48 | grep gbp
-
-# Confirm VLAN mapping
-bridge vlan show dev vxlan48
-
-# Confirm EVPN VNI maps to VLAN 1151 (not VLAN 1!)
-sudo vtysh -c "show evpn vni 401151"</pre>
-
-<div class="warning-box">
-    <strong>VLAN Mapping Pitfall:</strong> When vxlan48 is manually recreated and added back to <code>br_default</code>, the bridge assigns VLAN 1 as the default PVID. This causes VNI 401151 to map to VLAN 1 instead of VLAN 1151, breaking ALL VXLAN traffic (not just Versa). You <strong>must</strong> explicitly delete VID 1 and add VID 1151 as PVID.
+<div class="panel panel-error">
+<strong>VLAN Mapping Pitfall</strong>
+When vxlan48 is manually recreated and added to <code>br_default</code>, the bridge assigns VLAN 1 as default PVID. This maps VNI 401151 to VLAN 1 instead of 1151, breaking <strong>ALL</strong> VXLAN traffic. You must explicitly delete VID 1 and set VID 1151 as PVID.
 </div>
 
-<div class="warning-box">
-    <strong>Persistence Note:</strong> The manual <code>ip link</code> recreation is <strong>not persistent across reboots</strong>. After reboot, NVUE will recreate vxlan48 without GBP. To make this permanent, edit <code>/etc/network/interfaces</code> or configure a post-boot script. NVUE does not currently expose a <code>gbp</code> option for VXLAN interfaces.
+<div class="panel panel-warning">
+<strong>Persistence</strong>
+The manual <code>ip link</code> recreation is <strong>not persistent across reboots</strong>. NVUE does not currently expose a <code>gbp</code> option. Configure a post-boot script or edit <code>/etc/network/interfaces</code> to persist.
 </div>
 
-<h3>12.3 Post-Fix Verification</h3>
-
-<pre class="cumulus">cumulus@cumulus:~$ ip -d link show vxlan48
-
-14: vxlan48: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 9216
-    master br_default state UNKNOWN
-    vxlan id 401151 local 1.1.1.5 srcport 0 0 dstport 4789
-    nolearning ttl 64 ageing 300 udpcsum <b>gbp</b>
-    bridge_slave state <b>forwarding</b> learning <b>off</b> neigh_suppress <b>on</b>
+<h3>12.4 Post-Fix Verification</h3>
+<pre>cumulus@cumulus:~$ ip -d link show vxlan48 | grep -i gbp
+    vxlan id 401151 local 1.1.1.5 dstport 4789 nolearning ttl 64 udpcsum <strong>gbp</strong>
 
 cumulus@cumulus:~$ bridge vlan show dev vxlan48
 port     vlan ids
-vxlan48  <b>1151 PVID Egress Untagged</b>
+vxlan48  <strong>1151 PVID Egress Untagged</strong>
 
-cumulus@cumulus:~$ sudo vtysh -c "show evpn vni 401151"
-VNI: 401151
- Type: L2
- Vlan: <b>1151</b>          &lt;-- Must be 1151, NOT 1
- Bridge: br_default
- Remote VTEPs:
-  1.1.1.4 flood: HER
-  1.1.1.3 flood: HER
-  1.1.1.2 flood: HER</pre>
+cumulus@cumulus:~$ sudo vtysh -c "show evpn vni 401151" | grep Vlan
+ Vlan: <strong>1151</strong>          ← must be 1151, NOT 1</pre>
 
-<div class="success-box">
-    <strong>Resolution Confirmed:</strong> After enabling GBP on vxlan48, Cumulus correctly accepts VXLAN packets with GBP flags from Versa. Traffic flows successfully between all VTEPs including Cumulus &harr; Versa.
-</div>
+<div class="panel panel-success"><strong>Resolution Confirmed</strong> After enabling GBP, Cumulus accepts VXLAN-GBP packets from Versa. Traffic flows between all VTEPs.</div>
 
-<div class="page-break"></div>
+<!-- ==================== 13 ==================== -->
+<h2 id="s13">13. Command Reference</h2>
 
-<!-- ===================== SECTION 13 ===================== -->
-<h2 id="s13">13. Troubleshooting Commands</h2>
-
-<h3>13.1 Cisco IOS-XE Commands</h3>
+<h3>Cisco IOS-XE</h3>
 <table>
-    <tr>
-        <th>Command</th>
-        <th>Purpose</th>
-    </tr>
-    <tr><td><code>show bgp l2vpn evpn summary</code></td><td>BGP EVPN neighbor status</td></tr>
-    <tr><td><code>show bgp l2vpn evpn route-type 2</code></td><td>MAC/IP routes (Type-2)</td></tr>
-    <tr><td><code>show bgp l2vpn evpn route-type 3</code></td><td>IMET routes (Type-3)</td></tr>
-    <tr><td><code>show nve peers</code></td><td>VXLAN tunnel peer status</td></tr>
-    <tr><td><code>show nve vni</code></td><td>VNI status and mappings</td></tr>
-    <tr><td><code>show l2vpn evpn mac evi &lt;id&gt;</code></td><td>EVPN learned MACs per EVI</td></tr>
-    <tr><td><code>show l2vpn evpn evi detail</code></td><td>Detailed EVI information</td></tr>
-    <tr><td><code>show l2fib bridge-domain &lt;vni&gt;</code></td><td>Data plane FDB entries</td></tr>
-    <tr><td><code>show ip ospf neighbor</code></td><td>OSPF adjacency status</td></tr>
+  <tr><th>Command</th><th>Purpose</th></tr>
+  <tr><td><code>show bgp l2vpn evpn summary</code></td><td>BGP EVPN neighbor status</td></tr>
+  <tr><td><code>show bgp l2vpn evpn route-type 2</code></td><td>MAC/IP routes (Type-2)</td></tr>
+  <tr><td><code>show bgp l2vpn evpn route-type 3</code></td><td>IMET routes (Type-3)</td></tr>
+  <tr><td><code>show nve peers</code></td><td>VXLAN tunnel peer status</td></tr>
+  <tr><td><code>show nve vni</code></td><td>VNI status / mappings</td></tr>
+  <tr><td><code>show l2vpn evpn mac evi &lt;id&gt;</code></td><td>EVPN learned MACs per EVI</td></tr>
+  <tr><td><code>show l2vpn evpn evi detail</code></td><td>Detailed EVI information</td></tr>
+  <tr><td><code>show l2fib bridge-domain &lt;vni&gt;</code></td><td>Data plane FDB entries</td></tr>
+  <tr><td><code>show ip ospf neighbor</code></td><td>OSPF adjacency status</td></tr>
 </table>
 
-<h3>13.2 Cumulus Linux (NVIDIA) Commands</h3>
+<h3>Cumulus Linux (NVIDIA)</h3>
 <table>
-    <tr>
-        <th>Command</th>
-        <th>Purpose</th>
-    </tr>
-    <tr><td><code>sudo vtysh -c "show bgp l2vpn evpn summary"</code></td><td>BGP EVPN neighbor status</td></tr>
-    <tr><td><code>sudo vtysh -c "show bgp l2vpn evpn route vni &lt;id&gt;"</code></td><td>EVPN routes per VNI</td></tr>
-    <tr><td><code>sudo vtysh -c "show evpn vni &lt;id&gt;"</code></td><td>VNI status (VLAN mapping, remote VTEPs)</td></tr>
-    <tr><td><code>sudo vtysh -c "show evpn arp-cache vni &lt;id&gt;"</code></td><td>EVPN ARP/ND cache</td></tr>
-    <tr><td><code>sudo vtysh -c "show evpn mac vni &lt;id&gt;"</code></td><td>EVPN MAC table per VNI</td></tr>
-    <tr><td><code>sudo vtysh -c "show ip ospf neighbor"</code></td><td>OSPF adjacency status</td></tr>
-    <tr><td><code>bridge fdb show dev vxlan48</code></td><td>Bridge FDB (MAC table) for VXLAN</td></tr>
-    <tr><td><code>bridge vlan show dev vxlan48</code></td><td>VLAN membership on VXLAN interface</td></tr>
-    <tr><td><code>ip -d link show vxlan48</code></td><td>Detailed VXLAN interface (check GBP flag)</td></tr>
-    <tr><td><code>nv config show --output commands</code></td><td>Running config in NVUE set format</td></tr>
-    <tr><td><code>ip -s link show vxlan48</code></td><td>VXLAN interface packet/byte counters</td></tr>
-    <tr><td><code>sudo tcpdump -i swp1 udp port 4789 -nn</code></td><td>Capture VXLAN underlay traffic</td></tr>
+  <tr><th>Command</th><th>Purpose</th></tr>
+  <tr><td><code>sudo vtysh -c "show bgp l2vpn evpn summary"</code></td><td>BGP EVPN peers</td></tr>
+  <tr><td><code>sudo vtysh -c "show bgp l2vpn evpn route vni &lt;id&gt;"</code></td><td>EVPN routes per VNI</td></tr>
+  <tr><td><code>sudo vtysh -c "show evpn vni &lt;id&gt;"</code></td><td>VNI status (VLAN map, remote VTEPs)</td></tr>
+  <tr><td><code>sudo vtysh -c "show evpn arp-cache vni &lt;id&gt;"</code></td><td>EVPN ARP/ND cache</td></tr>
+  <tr><td><code>sudo vtysh -c "show evpn mac vni &lt;id&gt;"</code></td><td>EVPN MAC table per VNI</td></tr>
+  <tr><td><code>bridge fdb show dev vxlan48</code></td><td>Bridge FDB (MAC table)</td></tr>
+  <tr><td><code>bridge vlan show dev vxlan48</code></td><td>VLAN membership check</td></tr>
+  <tr><td><code>ip -d link show vxlan48</code></td><td>VXLAN interface detail (check GBP)</td></tr>
+  <tr><td><code>nv config show --output commands</code></td><td>Running config in set format</td></tr>
+  <tr><td><code>sudo tcpdump -i swp1 udp port 4789 -nn</code></td><td>Capture VXLAN traffic</td></tr>
 </table>
 
-<h3>13.3 Versa FlexVNF Commands</h3>
+<h3>Versa FlexVNF</h3>
 <table>
-    <tr>
-        <th>Command</th>
-        <th>Purpose</th>
-    </tr>
-    <tr><td><code>show bgp summary</code></td><td>BGP neighbor status</td></tr>
-    <tr><td><code>show bridge</code></td><td>MAC address table (bridge FDB)</td></tr>
-    <tr><td><code>show bridge-evpn</code></td><td>EVPN instance status</td></tr>
-    <tr><td><code>show bridge-domain</code></td><td>Bridge domain details</td></tr>
-    <tr><td><code>show ospf route routing-instance Underlay</code></td><td>OSPF routes in underlay VR</td></tr>
-    <tr><td><code>show route routing-instance Underlay &lt;prefix&gt;</code></td><td>Route lookup in underlay</td></tr>
-    <tr><td><code>ping &lt;ip&gt; routing-instance Underlay count 3</code></td><td>Ping from underlay VR</td></tr>
-    <tr><td><code>show configuration routing-instances</code></td><td>Routing instance configuration</td></tr>
+  <tr><th>Command</th><th>Purpose</th></tr>
+  <tr><td><code>show bgp summary</code></td><td>BGP neighbor status</td></tr>
+  <tr><td><code>show bridge</code></td><td>MAC address table</td></tr>
+  <tr><td><code>show bridge-evpn</code></td><td>EVPN instance status</td></tr>
+  <tr><td><code>show bridge-domain</code></td><td>Bridge domain details</td></tr>
+  <tr><td><code>show ospf route routing-instance Underlay</code></td><td>OSPF routes</td></tr>
+  <tr><td><code>ping &lt;ip&gt; routing-instance Underlay count 3</code></td><td>Ping from underlay VR</td></tr>
 </table>
 
-<div class="warning-box">
-    <strong>Important Note - Remote MAC Display on Cisco:</strong><br>
-    On IOS-XE, remote MACs learned via EVPN appear in <code>show l2vpn evpn mac</code> and <code>show l2fib bridge-domain</code>. They do <strong>NOT</strong> appear in <code>show mac address-table</code> (locally learned MACs only). This is expected behavior.
-</div>
+<div class="panel panel-warning"><strong>Note &mdash; Remote MACs on Cisco</strong> Remote MACs appear in <code>show l2vpn evpn mac</code> and <code>show l2fib bridge-domain</code>. They do <strong>NOT</strong> appear in <code>show mac address-table</code> (local MACs only). This is expected.</div>
 
-<div class="page-break"></div>
-
-<!-- ===================== SECTION 14 ===================== -->
-<h2 id="s14">14. Summary &amp; Lessons Learned</h2>
-
-<p>The multi-vendor EVPN VXLAN fabric with Cisco Catalyst 9300, Versa FlexVNF, and Cumulus Linux (NVIDIA) is <strong>fully operational</strong>. Layer 2 extension of VLAN 1151 (VNI 401151) works between all four leaf VTEPs:</p>
+<!-- ==================== 14 ==================== -->
+<h2 id="s14">14. Lessons Learned</h2>
 
 <table>
-    <tr>
-        <th>VTEP</th>
-        <th>IP</th>
-        <th>Vendor</th>
-        <th>Status</th>
-    </tr>
-    <tr><td>sw2</td><td>1.1.1.2</td><td><span class="vendor-tag vendor-cisco">Cisco</span></td><td><span class="badge badge-success">Operational</span></td></tr>
-    <tr><td>sw3</td><td>1.1.1.3</td><td><span class="vendor-tag vendor-cisco">Cisco</span></td><td><span class="badge badge-success">Operational</span></td></tr>
-    <tr><td>Versa</td><td>1.1.1.4</td><td><span class="vendor-tag vendor-versa">Versa</span></td><td><span class="badge badge-success">Operational</span></td></tr>
-    <tr><td>Cumulus</td><td>1.1.1.5</td><td><span class="vendor-tag vendor-cumulus">Cumulus</span></td><td><span class="badge badge-success">Operational</span></td></tr>
+<tr><th>#</th><th>Issue</th><th>Impact</th><th>Resolution</th></tr>
+<tr>
+  <td>1</td>
+  <td><strong>VXLAN-GBP Flag Mismatch</strong></td>
+  <td>100% data plane failure Cumulus &harr; Versa</td>
+  <td>Enable <code>gbp</code> on Cumulus VXLAN interface at creation time</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><strong>VLAN-VNI Mapping after VXLAN Recreation</strong></td>
+  <td>VNI maps to VLAN 1 (default PVID) instead of 1151</td>
+  <td><code>bridge vlan del vid 1</code> then <code>bridge vlan add vid 1151 pvid untagged</code></td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><strong>OSPF MTU Mismatch</strong></td>
+  <td>OSPF stuck in ExStart between Cisco (1550) and Cumulus (9216)</td>
+  <td><code>ip ospf mtu-ignore</code> on both ends</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><strong>Cumulus NVUE OSPF Context</strong></td>
+  <td>OSPF daemon won't activate</td>
+  <td>Must use <code>nv set vrf default router ospf enable on</code></td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><strong>Versa Route Target</strong></td>
+  <td>Versa exports RT 2:2 + 1151:1</td>
+  <td>All VTEPs import 1151:1 (matches). Optionally import 2:2.</td>
+</tr>
 </table>
 
-<h3>14.1 Key Lessons Learned</h3>
-
-<table>
-    <tr><th>#</th><th>Issue</th><th>Impact</th><th>Resolution</th></tr>
-    <tr>
-        <td>1</td>
-        <td><strong>VXLAN-GBP Flag Mismatch</strong></td>
-        <td>Complete Cumulus &harr; Versa data plane failure. Control plane unaffected.</td>
-        <td>Enable <code>gbp</code> flag on Cumulus VXLAN interface at creation time. Linux kernel drops GBP-flagged packets on non-GBP interfaces.</td>
-    </tr>
-    <tr>
-        <td>2</td>
-        <td><strong>VLAN-VNI Mapping after VXLAN Recreation</strong></td>
-        <td>VNI maps to VLAN 1 (default PVID) instead of VLAN 1151, breaking all VXLAN traffic.</td>
-        <td>After recreating vxlan interface, explicitly set correct VLAN as PVID: <code>bridge vlan del vid 1</code> then <code>bridge vlan add vid 1151 pvid untagged</code>.</td>
-    </tr>
-    <tr>
-        <td>3</td>
-        <td><strong>OSPF MTU Mismatch</strong></td>
-        <td>OSPF stuck in ExStart/DBD between Cisco (MTU 1550) and Cumulus (MTU 9216).</td>
-        <td>Configure <code>ip ospf mtu-ignore</code> on both sides, or match MTU values.</td>
-    </tr>
-    <tr>
-        <td>4</td>
-        <td><strong>Cumulus NVUE OSPF Context</strong></td>
-        <td>OSPF daemon doesn't activate if configured only at global level.</td>
-        <td>Must enable OSPF under VRF default context: <code>nv set vrf default router ospf enable on</code>.</td>
-    </tr>
-    <tr>
-        <td>5</td>
-        <td><strong>Versa Route Target</strong></td>
-        <td>Versa exports non-standard RT (2:2) alongside standard RT (1151:1).</td>
-        <td>Ensure all Cisco VTEPs import RT 1151:1 (Versa also exports this). Optionally import 2:2 for completeness.</td>
-    </tr>
-</table>
-
-<h3>14.2 Recommendations</h3>
-
+<h3>Recommendations</h3>
 <ul>
-    <li><strong>GBP Persistence:</strong> Configure a post-boot script or edit <code>/etc/network/interfaces</code> to ensure the <code>gbp</code> flag survives Cumulus reboots. NVUE does not currently support the GBP option natively.</li>
-    <li><strong>Monitoring:</strong> Monitor VXLAN interface flags after every <code>nv config apply</code> to ensure GBP is preserved.</li>
-    <li><strong>Packet Captures:</strong> When troubleshooting VXLAN interop issues, always check the VXLAN flags byte in pcap. Different vendors may set different extension flags (GBP, GPE, etc.).</li>
-    <li><strong>MTU Consistency:</strong> Standardize underlay MTU across all vendors to avoid OSPF and VXLAN fragmentation issues.</li>
+  <li><strong>GBP Persistence:</strong> Edit <code>/etc/network/interfaces</code> or create post-boot script. NVUE doesn't support <code>gbp</code> natively.</li>
+  <li><strong>Monitoring:</strong> Check VXLAN flags after every <code>nv config apply</code> to ensure GBP preserved.</li>
+  <li><strong>Packet Captures:</strong> Always check VXLAN flags byte when troubleshooting multi-vendor interop.</li>
+  <li><strong>MTU:</strong> Standardize underlay MTU across all vendors.</li>
 </ul>
 
-<div class="footer">
-    <p><strong>INTERNAL ENGINEERING DOCUMENT</strong><br>
-    Multi-Vendor EVPN VXLAN Integration &mdash; Cisco / Versa / Cumulus<br>
-    Version 2.0 &mdash; February 10, 2026<br>
-    Generated with Claude Code</p>
-</div>
+<hr style="margin:40px 0 20px;border:none;border-top:1px solid #dfe1e6">
+<p style="text-align:center;font-size:12px;color:#6b778c"><strong>INTERNAL ENGINEERING DOCUMENT</strong><br>Multi-Vendor EVPN VXLAN &mdash; v2.0 &mdash; February 2026<br>Generated with Claude Code</p>
+
+</div><!-- /main -->
+</div><!-- /wiki-wrap -->
+
+<script>
+// Highlight active sidebar link on scroll
+document.addEventListener('scroll',function(){
+  var links=document.querySelectorAll('.sidebar a');
+  var sections=[];
+  links.forEach(function(l){
+    var id=l.getAttribute('href');
+    if(id&&id.startsWith('#')){var el=document.querySelector(id);if(el)sections.push({el:el,link:l})}
+  });
+  var cur=null;
+  sections.forEach(function(s){if(s.el.getBoundingClientRect().top<=80)cur=s});
+  links.forEach(function(l){l.classList.remove('active')});
+  if(cur)cur.link.classList.add('active');
+});
+</script>
 
 </body>
 </html>
