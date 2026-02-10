@@ -1,141 +1,260 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 780" width="1100" height="780">
   <defs>
     <style>
-      .device { fill: #f0f0f0; stroke: #333; stroke-width: 2; }
-      .router { fill: #e8f5e9; stroke: #2e7d32; stroke-width: 2; }
-      .switch { fill: #e3f2fd; stroke: #1565c0; stroke-width: 2; }
-      .host { fill: #fff3e0; stroke: #ef6c00; stroke-width: 2; }
-      .text { font-family: Arial, sans-serif; font-size: 12px; fill: #333; }
-      .title { font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; fill: #333; }
-      .ip { font-family: monospace; font-size: 10px; fill: #666; }
-      .link { stroke: #666; stroke-width: 2; fill: none; }
-      .vxlan { stroke: #9c27b0; stroke-width: 3; stroke-dasharray: 5,5; fill: none; }
-      .bgp { stroke: #4caf50; stroke-width: 2; fill: none; }
-      .label { font-family: Arial, sans-serif; font-size: 10px; fill: #666; }
+      .switch { fill: #e3f2fd; stroke: #1565c0; stroke-width: 2; rx: 8; }
+      .versa { fill: #fff3e0; stroke: #e65100; stroke-width: 2; rx: 8; }
+      .cumulus { fill: #e8f5e9; stroke: #2e7d32; stroke-width: 2; rx: 8; }
+      .spine { fill: #e8eaf6; stroke: #283593; stroke-width: 2.5; rx: 10; }
+      .client { fill: #fce4ec; stroke: #c62828; stroke-width: 1.5; rx: 6; }
+      .text { font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; fill: #333; }
+      .title { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; font-weight: bold; fill: #333; }
+      .ip { font-family: 'Consolas', monospace; font-size: 10px; fill: #555; }
+      .link { stroke: #78909c; stroke-width: 2; fill: none; }
+      .vxlan { stroke: #7b1fa2; stroke-width: 2.5; stroke-dasharray: 6,4; fill: none; }
+      .bgp-label { font-family: 'Segoe UI', Arial, sans-serif; font-size: 10px; fill: #c62828; font-weight: bold; }
+      .ospf-label { font-family: 'Segoe UI', Arial, sans-serif; font-size: 10px; fill: #1565c0; font-weight: bold; }
+      .intf { font-family: 'Consolas', monospace; font-size: 9px; fill: #78909c; }
+      .vlan-tag { fill: #f3e5f5; stroke: #7b1fa2; stroke-width: 1.5; rx: 4; }
+      .vendor-cisco { font-family: 'Segoe UI', Arial, sans-serif; font-size: 9px; fill: white; font-weight: bold; }
+      .vendor-versa { font-family: 'Segoe UI', Arial, sans-serif; font-size: 9px; fill: white; font-weight: bold; }
+      .vendor-cumulus { font-family: 'Segoe UI', Arial, sans-serif; font-size: 9px; fill: white; font-weight: bold; }
     </style>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#00000020"/>
+    </filter>
   </defs>
 
   <!-- Background -->
-  <rect width="800" height="600" fill="#fafafa"/>
+  <rect width="1100" height="780" fill="#fafafa"/>
 
   <!-- Title -->
-  <text x="400" y="30" text-anchor="middle" class="title" style="font-size: 18px;">BGP EVPN VXLAN Fabric - Cisco Catalyst 9000</text>
+  <text x="550" y="30" text-anchor="middle" style="font-family: 'Segoe UI', Arial; font-size: 20px; font-weight: bold; fill: #1a237e;">Multi-Vendor BGP EVPN VXLAN Fabric</text>
+  <text x="550" y="50" text-anchor="middle" style="font-family: 'Segoe UI', Arial; font-size: 12px; fill: #78909c;">Cisco Catalyst 9300 / Versa FlexVNF / Cumulus Linux (NVIDIA)</text>
 
-  <!-- External Router -->
-  <rect x="325" y="50" width="150" height="60" rx="10" class="router"/>
-  <text x="400" y="75" text-anchor="middle" class="title">External_Router_1</text>
-  <text x="400" y="95" text-anchor="middle" class="ip">AS 6505 | 10.1.1.1</text>
+  <!-- ==================== SW1 SPINE ==================== -->
+  <rect x="400" y="75" width="300" height="80" class="spine" filter="url(#shadow)"/>
+  <rect x="405" y="80" width="60" height="16" rx="3" fill="#283593"/>
+  <text x="435" y="92" text-anchor="middle" class="vendor-cisco">CISCO</text>
+  <text x="550" y="100" text-anchor="middle" class="title">sw1 - Spine / BGP Route Reflector</text>
+  <text x="550" y="118" text-anchor="middle" class="ip">Loopback: 1.1.1.1 | AS 6500 | Mgmt: 192.168.20.77</text>
+  <text x="550" y="133" text-anchor="middle" class="ip" style="fill: #c62828;">BGP Route Reflector</text>
 
-  <!-- External Router Interfaces -->
-  <text x="355" y="120" text-anchor="middle" class="ip">E0/0</text>
-  <text x="445" y="120" text-anchor="middle" class="ip">E0/1</text>
+  <!-- SW1 Interface labels at bottom -->
+  <text x="430" y="168" text-anchor="middle" class="intf">Gi1/0/1</text>
+  <text x="500" y="168" text-anchor="middle" class="intf">Gi1/0/2</text>
+  <text x="600" y="168" text-anchor="middle" class="intf">Gi1/0/3</text>
+  <text x="670" y="168" text-anchor="middle" class="intf">Gi1/0/4</text>
 
-  <!-- BGP Links to External -->
-  <line x1="355" y1="110" x2="355" y2="180" class="bgp"/>
-  <line x1="445" y1="110" x2="445" y2="180" class="bgp"/>
-  <text x="320" y="150" class="label" fill="#4caf50">BGP</text>
-  <text x="455" y="150" class="label" fill="#4caf50">BGP</text>
+  <!-- Protocol Labels -->
+  <text x="310" y="185" text-anchor="middle" class="bgp-label">BGP</text>
+  <text x="810" y="185" text-anchor="middle" class="bgp-label">BGP</text>
+  <text x="550" y="195" text-anchor="middle" class="ospf-label">OSPF Area 100</text>
 
-  <!-- SW1 Spine -->
-  <rect x="300" y="180" width="200" height="70" rx="10" class="switch"/>
-  <text x="400" y="205" text-anchor="middle" class="title">sw1 (Spine/RR)</text>
-  <text x="400" y="225" text-anchor="middle" class="ip">Loopback0: 1.1.1.1 | AS 6500</text>
-  <text x="400" y="240" text-anchor="middle" class="ip">192.168.20.77</text>
+  <!-- Links from SW1 to leaf switches -->
+  <line x1="430" y1="155" x2="170" y2="280" class="link"/>
+  <line x1="500" y1="155" x2="410" y2="280" class="link"/>
+  <line x1="600" y1="155" x2="690" y2="280" class="link"/>
+  <line x1="670" y1="155" x2="930" y2="280" class="link"/>
 
-  <!-- SW1 Interface Labels -->
-  <text x="330" y="260" text-anchor="middle" class="ip">Gi1/0/1</text>
-  <text x="470" y="260" text-anchor="middle" class="ip">Gi1/0/2</text>
+  <!-- Link IPs -->
+  <text x="270" y="210" class="ip" style="font-size:9px;">12.12.12.1/.2</text>
+  <text x="430" y="220" class="ip" style="font-size:9px;">12.12.12.5/.6</text>
+  <text x="620" y="220" class="ip" style="font-size:9px;">12.12.12.9/.10</text>
+  <text x="790" y="210" class="ip" style="font-size:9px;">12.12.12.13/.14</text>
 
-  <!-- Links from SW1 to SW2/SW3 -->
-  <line x1="330" y1="250" x2="200" y2="320" class="link"/>
-  <line x1="470" y1="250" x2="600" y2="320" class="link"/>
+  <!-- ==================== LEAF SWITCHES ROW ==================== -->
 
-  <!-- IP addresses on links -->
-  <text x="240" y="280" class="ip">12.12.12.1</text>
-  <text x="510" y="280" class="ip">12.12.12.5</text>
+  <!-- Leaf Switch Band -->
+  <rect x="60" y="270" width="980" height="15" rx="3" fill="#ffcdd2" opacity="0.4"/>
+  <text x="550" y="282" text-anchor="middle" style="font-family: 'Segoe UI'; font-size: 9px; fill: #c62828;">leaf_Switches</text>
 
-  <!-- SW2 Leaf -->
-  <rect x="100" y="320" width="200" height="90" rx="10" class="switch"/>
-  <text x="200" y="345" text-anchor="middle" class="title">sw2 (Leaf VTEP)</text>
-  <text x="200" y="365" text-anchor="middle" class="ip">Loopback0: 1.1.1.2</text>
-  <text x="200" y="380" text-anchor="middle" class="ip">192.168.20.76</text>
-  <text x="200" y="395" text-anchor="middle" class="ip" fill="#9c27b0">NVE1 VTEP</text>
+  <!-- ==================== SW2 ==================== -->
+  <rect x="70" y="295" width="200" height="95" class="switch" filter="url(#shadow)"/>
+  <rect x="75" y="300" width="60" height="16" rx="3" fill="#1565c0"/>
+  <text x="105" y="312" text-anchor="middle" class="vendor-cisco">CISCO</text>
+  <text x="170" y="320" text-anchor="middle" class="title">Cisco-SW2</text>
+  <text x="170" y="338" text-anchor="middle" class="text">Leaf VTEP</text>
+  <text x="170" y="355" text-anchor="middle" class="ip">Lo: 1.1.1.2 | Mgmt: 192.168.20.76</text>
+  <text x="170" y="370" text-anchor="middle" class="ip" style="fill:#7b1fa2;">NVE1 VTEP | VNI 401151</text>
 
-  <!-- SW3 Leaf -->
-  <rect x="500" y="320" width="200" height="90" rx="10" class="switch"/>
-  <text x="600" y="345" text-anchor="middle" class="title">sw3 (Leaf VTEP)</text>
-  <text x="600" y="365" text-anchor="middle" class="ip">Loopback0: 1.1.1.3</text>
-  <text x="600" y="380" text-anchor="middle" class="ip">192.168.20.81</text>
-  <text x="600" y="395" text-anchor="middle" class="ip" fill="#9c27b0">NVE1 VTEP</text>
+  <!-- SW2 Interface -->
+  <text x="130" y="402" text-anchor="middle" class="intf">Gi1/0/4</text>
+  <text x="210" y="402" text-anchor="middle" class="intf">Gi1/0/3</text>
 
-  <!-- VXLAN Tunnel between SW2 and SW3 -->
-  <path d="M 200 410 Q 400 450 600 410" class="vxlan"/>
-  <text x="400" y="465" text-anchor="middle" class="label" fill="#9c27b0">VXLAN Tunnel (VNI 401151, 401152, 401153)</text>
+  <!-- ==================== SW3 ==================== -->
+  <rect x="310" y="295" width="200" height="95" class="switch" filter="url(#shadow)"/>
+  <rect x="315" y="300" width="60" height="16" rx="3" fill="#1565c0"/>
+  <text x="345" y="312" text-anchor="middle" class="vendor-cisco">CISCO</text>
+  <text x="410" y="320" text-anchor="middle" class="title">Cisco-SW3</text>
+  <text x="410" y="338" text-anchor="middle" class="text">Leaf VTEP</text>
+  <text x="410" y="355" text-anchor="middle" class="ip">Lo: 1.1.1.3 | Mgmt: 192.168.20.81</text>
+  <text x="410" y="370" text-anchor="middle" class="ip" style="fill:#7b1fa2;">NVE1 VTEP | VNI 401151</text>
 
-  <!-- VLAN boxes under SW2 -->
-  <rect x="70" y="480" width="70" height="40" rx="5" class="host"/>
-  <text x="105" y="500" text-anchor="middle" class="text">VLAN 1151</text>
-  <text x="105" y="515" text-anchor="middle" class="ip">192.168.1.0/25</text>
+  <!-- SW3 Interfaces -->
+  <text x="370" y="402" text-anchor="middle" class="intf">Gi1/0/3</text>
+  <text x="450" y="402" text-anchor="middle" class="intf">Gi1/0/4</text>
 
-  <rect x="150" y="480" width="70" height="40" rx="5" class="host"/>
-  <text x="185" y="500" text-anchor="middle" class="text">VLAN 1152</text>
-  <text x="185" y="515" text-anchor="middle" class="ip">192.168.2.0/25</text>
+  <!-- ==================== VERSA ==================== -->
+  <rect x="590" y="295" width="200" height="95" class="versa" filter="url(#shadow)"/>
+  <rect x="595" y="300" width="60" height="16" rx="3" fill="#e65100"/>
+  <text x="625" y="312" text-anchor="middle" class="vendor-versa">VERSA</text>
+  <text x="690" y="320" text-anchor="middle" class="title">VERSA-0</text>
+  <text x="690" y="338" text-anchor="middle" class="text">SD-WAN VTEP (FlexVNF)</text>
+  <text x="690" y="355" text-anchor="middle" class="ip">VTEP: 1.1.1.4 | Mgmt: 192.168.20.166</text>
+  <text x="690" y="370" text-anchor="middle" class="ip" style="fill:#e65100;">VXLAN-GBP Enabled (flags=0x88)</text>
 
-  <rect x="230" y="480" width="70" height="40" rx="5" class="host"/>
-  <text x="265" y="500" text-anchor="middle" class="text">VLAN 1153</text>
-  <text x="265" y="515" text-anchor="middle" class="ip">192.168.3.0/25</text>
+  <!-- Versa Interface -->
+  <text x="690" y="402" text-anchor="middle" class="intf">Vni-0/1</text>
 
-  <!-- VLAN boxes under SW3 -->
-  <rect x="470" y="480" width="70" height="40" rx="5" class="host"/>
-  <text x="505" y="500" text-anchor="middle" class="text">VLAN 1151</text>
-  <text x="505" y="515" text-anchor="middle" class="ip">192.168.1.0/25</text>
+  <!-- ==================== CUMULUS ==================== -->
+  <rect x="830" y="295" width="200" height="95" class="cumulus" filter="url(#shadow)"/>
+  <rect x="835" y="300" width="75" height="16" rx="3" fill="#2e7d32"/>
+  <text x="872" y="312" text-anchor="middle" class="vendor-cumulus">CUMULUS</text>
+  <text x="930" y="320" text-anchor="middle" class="title">Cumulus_Nvidia</text>
+  <text x="930" y="338" text-anchor="middle" class="text">Leaf VTEP (Linux 5.x)</text>
+  <text x="930" y="355" text-anchor="middle" class="ip">Lo: 1.1.1.5 | Mgmt: 192.168.20.172</text>
+  <text x="930" y="370" text-anchor="middle" class="ip" style="fill:#2e7d32;">VXLAN GBP fix applied</text>
 
-  <rect x="550" y="480" width="70" height="40" rx="5" class="host"/>
-  <text x="585" y="500" text-anchor="middle" class="text">VLAN 1152</text>
-  <text x="585" y="515" text-anchor="middle" class="ip">192.168.2.0/25</text>
+  <!-- Cumulus Interface -->
+  <text x="930" y="402" text-anchor="middle" class="intf">Swp2</text>
 
-  <rect x="630" y="480" width="70" height="40" rx="5" class="host"/>
-  <text x="665" y="500" text-anchor="middle" class="text">VLAN 1153</text>
-  <text x="665" y="515" text-anchor="middle" class="ip">192.168.3.0/25</text>
+  <!-- ==================== VLAN 1151 Tags ==================== -->
+  <rect x="115" y="415" width="75" height="22" class="vlan-tag"/>
+  <text x="152" y="430" text-anchor="middle" style="font-family: 'Consolas'; font-size: 10px; fill: #7b1fa2;">VLAN 1151</text>
 
-  <!-- Lines from switches to VLANs -->
-  <line x1="150" y1="410" x2="105" y2="480" class="link"/>
-  <line x1="200" y1="410" x2="185" y2="480" class="link"/>
-  <line x1="250" y1="410" x2="265" y2="480" class="link"/>
+  <rect x="372" y="415" width="75" height="22" class="vlan-tag"/>
+  <text x="410" y="430" text-anchor="middle" style="font-family: 'Consolas'; font-size: 10px; fill: #7b1fa2;">VLAN 1151</text>
 
-  <line x1="550" y1="410" x2="505" y2="480" class="link"/>
-  <line x1="600" y1="410" x2="585" y2="480" class="link"/>
-  <line x1="650" y1="410" x2="665" y2="480" class="link"/>
+  <rect x="652" y="415" width="75" height="22" class="vlan-tag"/>
+  <text x="690" y="430" text-anchor="middle" style="font-family: 'Consolas'; font-size: 10px; fill: #7b1fa2;">VLAN 1151</text>
 
-  <!-- Hosts -->
-  <ellipse cx="105" cy="555" rx="35" ry="20" class="host"/>
-  <text x="105" y="560" text-anchor="middle" class="ip">Desktop 0</text>
+  <rect x="892" y="415" width="75" height="22" class="vlan-tag"/>
+  <text x="930" y="430" text-anchor="middle" style="font-family: 'Consolas'; font-size: 10px; fill: #7b1fa2;">VLAN 1151</text>
 
-  <ellipse cx="665" cy="555" rx="35" ry="20" class="host"/>
-  <text x="665" y="560" text-anchor="middle" class="ip">Desktop 1</text>
+  <!-- Links to VLAN tags -->
+  <line x1="130" y1="390" x2="152" y2="415" class="link" style="stroke-width:1.5;"/>
+  <line x1="210" y1="390" x2="152" y2="415" class="link" style="stroke-width:1.5;"/>
+  <line x1="370" y1="390" x2="410" y2="415" class="link" style="stroke-width:1.5;"/>
+  <line x1="450" y1="390" x2="410" y2="415" class="link" style="stroke-width:1.5;"/>
+  <line x1="690" y1="390" x2="690" y2="415" class="link" style="stroke-width:1.5;"/>
+  <line x1="930" y1="390" x2="930" y2="415" class="link" style="stroke-width:1.5;"/>
 
-  <line x1="105" y1="520" x2="105" y2="535" class="link"/>
-  <line x1="665" y1="520" x2="665" y2="535" class="link"/>
+  <!-- Links from VLAN tags to clients -->
+  <line x1="130" y1="437" x2="100" y2="480" class="link" style="stroke-width:1.5;"/>
+  <line x1="175" y1="437" x2="230" y2="480" class="link" style="stroke-width:1.5;"/>
+  <line x1="385" y1="437" x2="350" y2="480" class="link" style="stroke-width:1.5;"/>
+  <line x1="435" y1="437" x2="470" y2="480" class="link" style="stroke-width:1.5;"/>
+  <line x1="690" y1="437" x2="690" y2="480" class="link" style="stroke-width:1.5;"/>
+  <line x1="930" y1="437" x2="930" y2="480" class="link" style="stroke-width:1.5;"/>
+
+  <!-- ==================== CLIENT DEVICES ==================== -->
+
+  <!-- Client intf labels -->
+  <text x="100" y="475" text-anchor="middle" class="intf">E0/0</text>
+  <text x="230" y="475" text-anchor="middle" class="intf">E0</text>
+  <text x="350" y="475" text-anchor="middle" class="intf">E0</text>
+  <text x="470" y="475" text-anchor="middle" class="intf">E0/0</text>
+  <text x="690" y="475" text-anchor="middle" class="intf">E0/1</text>
+  <text x="930" y="475" text-anchor="middle" class="intf">E0/1</text>
+
+  <!-- Test_Client_SW (sw2) -->
+  <rect x="50" y="485" width="100" height="50" class="client"/>
+  <text x="100" y="505" text-anchor="middle" class="text" style="font-size:10px;">Test_Client_SW</text>
+  <text x="100" y="525" text-anchor="middle" class="ip" style="font-weight:bold; fill:#c62828;">192.168.1.22</text>
+
+  <!-- desktop-0 (sw2) -->
+  <rect x="180" y="485" width="100" height="50" class="client"/>
+  <text x="230" y="505" text-anchor="middle" class="text" style="font-size:10px;">desktop-0</text>
+  <text x="230" y="525" text-anchor="middle" class="ip">192.168.1.x</text>
+
+  <!-- desktop-1 (sw3) -->
+  <rect x="300" y="485" width="100" height="50" class="client"/>
+  <text x="350" y="505" text-anchor="middle" class="text" style="font-size:10px;">desktop-1</text>
+  <text x="350" y="525" text-anchor="middle" class="ip">192.168.1.x</text>
+
+  <!-- Test_Client_SW_2 (sw3) -->
+  <rect x="420" y="485" width="100" height="50" class="client"/>
+  <text x="470" y="505" text-anchor="middle" class="text" style="font-size:10px;">Test_Client_SW_2</text>
+  <text x="470" y="525" text-anchor="middle" class="ip" style="font-weight:bold; fill:#c62828;">192.168.1.22</text>
+
+  <!-- Test_Client_SW_3 (Versa) -->
+  <rect x="640" y="485" width="100" height="50" class="client"/>
+  <text x="690" y="505" text-anchor="middle" class="text" style="font-size:10px;">Test_Client_SW_3</text>
+  <text x="690" y="525" text-anchor="middle" class="ip" style="font-weight:bold; fill:#e65100;">192.168.1.10</text>
+
+  <!-- iol-0 (Cumulus) -->
+  <rect x="880" y="485" width="100" height="50" class="client"/>
+  <text x="930" y="505" text-anchor="middle" class="text" style="font-size:10px;">iol-0</text>
+  <text x="930" y="525" text-anchor="middle" class="ip" style="font-weight:bold; fill:#2e7d32;">192.168.1.12</text>
+
+  <!-- ==================== VXLAN TUNNEL OVERLAY ==================== -->
+  <path d="M 170 390 C 170 460, 410 460, 410 390" class="vxlan" style="opacity:0.5;"/>
+  <path d="M 170 390 C 170 470, 690 470, 690 390" class="vxlan" style="opacity:0.5;"/>
+  <path d="M 170 390 C 170 475, 930 475, 930 390" class="vxlan" style="opacity:0.5;"/>
+  <path d="M 410 390 C 410 470, 690 470, 690 390" class="vxlan" style="opacity:0.5;"/>
+  <path d="M 410 390 C 410 475, 930 475, 930 390" class="vxlan" style="opacity:0.5;"/>
+  <path d="M 690 390 C 690 465, 930 465, 930 390" class="vxlan" style="opacity:0.5;"/>
+
+  <!-- ==================== INFO BOXES ==================== -->
+
+  <!-- VNI Info -->
+  <rect x="30" y="580" width="220" height="85" rx="6" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.5"/>
+  <text x="140" y="600" text-anchor="middle" class="title" style="fill:#7b1fa2;">VXLAN VNI Mapping</text>
+  <text x="140" y="618" text-anchor="middle" class="ip">VLAN 1151 → VNI 401151</text>
+  <text x="140" y="633" text-anchor="middle" class="ip">Subnet: 192.168.1.0/25</text>
+  <text x="140" y="648" text-anchor="middle" class="ip">Encap: UDP 4789 | Ingress Replication</text>
+
+  <!-- Underlay Info -->
+  <rect x="280" y="580" width="220" height="85" rx="6" fill="#e8eaf6" stroke="#283593" stroke-width="1.5"/>
+  <text x="390" y="600" text-anchor="middle" class="title" style="fill:#283593;">Underlay</text>
+  <text x="390" y="618" text-anchor="middle" class="ip">OSPF Area 100 (Point-to-Point)</text>
+  <text x="390" y="633" text-anchor="middle" class="ip">Links: 12.12.12.0/30 series</text>
+  <text x="390" y="648" text-anchor="middle" class="ip">MTU: 9216 (Cumulus) / 1550 (Cisco)</text>
+
+  <!-- Overlay Info -->
+  <rect x="530" y="580" width="220" height="85" rx="6" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="640" y="600" text-anchor="middle" class="title" style="fill:#2e7d32;">Overlay</text>
+  <text x="640" y="618" text-anchor="middle" class="ip">iBGP AS 6500 (L2VPN EVPN)</text>
+  <text x="640" y="633" text-anchor="middle" class="ip">Route Reflector: sw1 (1.1.1.1)</text>
+  <text x="640" y="648" text-anchor="middle" class="ip">RT: 1151:1 (all VTEPs)</text>
+
+  <!-- GBP Issue Box -->
+  <rect x="780" y="580" width="280" height="85" rx="6" fill="#ffebee" stroke="#c62828" stroke-width="1.5"/>
+  <text x="920" y="600" text-anchor="middle" class="title" style="fill:#c62828;">VXLAN-GBP Issue (Resolved)</text>
+  <text x="920" y="618" text-anchor="middle" class="ip">Versa sends flags=0x88 (GBP)</text>
+  <text x="920" y="633" text-anchor="middle" class="ip">Cumulus/Cisco send flags=0x08 (standard)</text>
+  <text x="920" y="648" text-anchor="middle" class="ip">Fix: ip link add ... gbp (on Cumulus)</text>
 
   <!-- Legend -->
-  <rect x="10" y="550" width="15" height="15" fill="#e3f2fd" stroke="#1565c0"/>
-  <text x="30" y="562" class="label">Switch</text>
+  <rect x="30" y="690" width="1040" height="55" rx="6" fill="white" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="55" y="710" class="title" style="font-size:11px;">Legend:</text>
 
-  <rect x="80" y="550" width="15" height="15" fill="#e8f5e9" stroke="#2e7d32"/>
-  <text x="100" y="562" class="label">Router</text>
+  <rect x="110" y="698" width="14" height="14" rx="3" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="130" y="710" class="text" style="font-size:10px;">Cisco</text>
 
-  <line x1="150" y1="557" x2="180" y2="557" class="vxlan"/>
-  <text x="185" y="562" class="label">VXLAN</text>
+  <rect x="175" y="698" width="14" height="14" rx="3" fill="#fff3e0" stroke="#e65100" stroke-width="1.5"/>
+  <text x="195" y="710" class="text" style="font-size:10px;">Versa</text>
 
-  <line x1="230" y1="557" x2="260" y2="557" class="bgp"/>
-  <text x="265" y="562" class="label">BGP</text>
+  <rect x="245" y="698" width="14" height="14" rx="3" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="265" y="710" class="text" style="font-size:10px;">Cumulus</text>
 
-  <!-- VRF Info Box -->
-  <rect x="620" y="50" width="160" height="80" rx="5" fill="#f3e5f5" stroke="#7b1fa2"/>
-  <text x="700" y="70" text-anchor="middle" class="title" fill="#7b1fa2">VRF-1</text>
-  <text x="700" y="90" text-anchor="middle" class="ip">RD: 10:1101</text>
-  <text x="700" y="105" text-anchor="middle" class="ip">RT: 10:1101</text>
-  <text x="700" y="120" text-anchor="middle" class="ip">L3VNI: 50101</text>
+  <rect x="325" y="698" width="14" height="14" rx="3" fill="#fce4ec" stroke="#c62828" stroke-width="1.5"/>
+  <text x="345" y="710" class="text" style="font-size:10px;">Client</text>
+
+  <line x1="400" y1="705" x2="435" y2="705" class="link"/>
+  <text x="442" y="710" class="text" style="font-size:10px;">Physical Link</text>
+
+  <line x1="520" y1="705" x2="555" y2="705" class="vxlan"/>
+  <text x="562" y="710" class="text" style="font-size:10px;">VXLAN Tunnel</text>
+
+  <text x="660" y="710" class="bgp-label">BGP</text>
+  <text x="690" y="710" class="text" style="font-size:10px;">= EVPN Peering</text>
+
+  <text x="800" y="710" class="ospf-label">OSPF</text>
+  <text x="835" y="710" class="text" style="font-size:10px;">= Underlay Routing</text>
+
+  <!-- Footer -->
+  <text x="550" y="760" text-anchor="middle" style="font-family: 'Segoe UI'; font-size: 9px; fill: #bdbdbd;">Multi-Vendor EVPN VXLAN Integration | AS 6500 | February 2026</text>
 
 </svg>
