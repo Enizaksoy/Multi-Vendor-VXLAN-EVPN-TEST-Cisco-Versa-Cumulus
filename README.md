@@ -84,16 +84,28 @@ A multi-vendor BGP EVPN VXLAN fabric integrating **Cisco Catalyst 9300**, **Vers
 
 ## VXLAN-GBP Interoperability Issue
 
-During integration testing, a critical issue was discovered: **Versa FlexVNF sends VXLAN packets with GBP (Group Based Policy) flags** (0x88 instead of standard 0x08). The Linux kernel VXLAN driver on Cumulus silently drops GBP-flagged packets unless the VXLAN interface is created with the `gbp` option.
+During integration testing, a critical interoperability issue was discovered with **VXLAN-GBP (Group Based Policy) extended headers**. Multiple vendors send VXLAN packets with GBP flags (0x88 instead of standard 0x08):
 
-**Symptoms:** Cumulus-to-Versa ping fails (100% loss) despite EVPN control plane being fully operational.
+- **Cisco Catalyst 9300** with `group-based-policy` + CTS/SGT enabled sends flags=0x88 with SGT tag in the Group Policy ID field
+- **Versa FlexVNF** sends flags=0x88 by default (GBP always enabled)
 
-**Resolution:** Recreate the VXLAN interface on Cumulus with `gbp` flag:
+The Linux kernel VXLAN driver (used by Cumulus Linux, Ubuntu, and other Linux-based network OS) **silently drops** GBP-flagged packets unless the VXLAN interface is created with the `gbp` option. This is **not a vendor-specific issue** — it affects any VTEP that sends VXLAN-GBP extended headers to a Linux-based receiver.
+
+**Symptoms:** 100% data plane packet loss between GBP-sending VTEP and Linux-based VTEP, despite EVPN control plane being fully operational (BGP sessions up, routes exchanged, NVE peers visible).
+
+**Affected traffic flows:**
+- Cisco (GBP ON) → Cumulus: **DROPPED** (without `gbp` flag on Cumulus)
+- Versa → Cumulus: **DROPPED** (without `gbp` flag on Cumulus)
+- Cisco (GBP OFF) → Cumulus: Works fine (standard 0x08 flags)
+
+**Resolution:** Recreate the VXLAN interface on Cumulus/Linux with `gbp` flag:
 ```bash
 sudo ip link add vxlan48 type vxlan id 401151 local 1.1.1.5 dstport 4789 nolearning gbp
 ```
 
-See [Section 11 of the HTML guide](docs/Versa-Cisco-EVPN-VXLAN-Integration.html) for full packet capture analysis and hex dump evidence.
+**Root Cause:** The Linux kernel VXLAN driver validates the flags byte. When it receives a packet with G-bit set (0x88) but the local VXLAN interface was not created with `gbp`, the kernel considers the header invalid and drops the packet silently — no log message, no counter increment.
+
+See [VXLAN-GBP Analysis Report](VXLAN_GBP_Analysis_Report.md) for full packet capture analysis with hex dump evidence from all four VTEPs.
 
 ## Cumulus Linux Quick Config (NVUE)
 

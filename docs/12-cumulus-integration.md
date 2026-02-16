@@ -145,11 +145,15 @@ ip -d link show vxlan48
 bridge vlan show dev vxlan48
 ```
 
-## VXLAN-GBP Fix (Required for Versa Interop)
+## VXLAN-GBP Fix (Required for GBP-Enabled VTEP Interop)
 
 See [VXLAN-GBP Interoperability Issue](Versa-Cisco-EVPN-VXLAN-Integration.html#s11) in the full HTML guide for details.
 
-Versa FlexVNF sends VXLAN-GBP headers (flags=0x88). The Linux kernel drops these unless the VXLAN interface has the `gbp` flag:
+**Any VTEP that sends VXLAN-GBP extended headers** (flags=0x88 instead of standard 0x08) will cause packet drops on Cumulus Linux. This includes:
+- **Cisco Catalyst 9300** with `group-based-policy` and CTS/SGT enabled (sends SGT tag in VXLAN-GBP Group Policy ID field)
+- **Versa FlexVNF** (sends GBP headers by default)
+
+The Linux kernel VXLAN driver silently drops GBP-flagged packets unless the VXLAN interface has the `gbp` flag:
 
 ```bash
 # Delete and recreate with GBP
